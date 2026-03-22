@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,8 @@ import com.aurelia.repository.UserRepository;
 @Import(SecurityIntegrationTests.SecurityProbeConfiguration.class)
 class SecurityIntegrationTests {
 
+	private static final List<String> TEST_EMAILS = List.of("auth@example.com");
+
 	@Autowired
 	private JwtService jwtService;
 
@@ -40,7 +43,7 @@ class SecurityIntegrationTests {
 
 	@BeforeEach
 	void setUp() {
-		userRepository.deleteAll();
+		userRepository.deleteByEmailIn(TEST_EMAILS);
 	}
 
 	@Test

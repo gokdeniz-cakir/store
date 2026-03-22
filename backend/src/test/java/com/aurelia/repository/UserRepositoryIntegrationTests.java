@@ -2,6 +2,9 @@ package com.aurelia.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,13 +15,21 @@ import com.aurelia.model.UserRole;
 @SpringBootTest
 class UserRepositoryIntegrationTests {
 
+	private static final List<String> TEST_EMAILS = List.of(
+		"ada@example.com",
+		"mary@example.com"
+	);
+
 	@Autowired
 	private UserRepository userRepository;
 
+	@BeforeEach
+	void setUp() {
+		userRepository.deleteByEmailIn(TEST_EMAILS);
+	}
+
 	@Test
 	void shouldFindUserByEmail() {
-		userRepository.deleteAll();
-
 		User user = User.builder()
 			.name("Ada Lovelace")
 			.email("ada@example.com")
@@ -39,8 +50,6 @@ class UserRepositoryIntegrationTests {
 
 	@Test
 	void shouldReportWhetherEmailExists() {
-		userRepository.deleteAll();
-
 		User user = User.builder()
 			.name("Mary Shelley")
 			.email("mary@example.com")

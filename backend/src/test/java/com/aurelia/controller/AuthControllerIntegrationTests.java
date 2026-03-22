@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,12 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthControllerIntegrationTests {
 
+	private static final List<String> TEST_EMAILS = List.of(
+		"reader@example.com",
+		"manager@example.com",
+		"sales@example.com"
+	);
+
 	private final ObjectMapper objectMapper = JsonMapper.builder()
 		.findAndAddModules()
 		.build();
@@ -42,7 +49,7 @@ class AuthControllerIntegrationTests {
 
 	@BeforeEach
 	void setUp() {
-		userRepository.deleteAll();
+		userRepository.deleteByEmailIn(TEST_EMAILS);
 	}
 
 	@Test

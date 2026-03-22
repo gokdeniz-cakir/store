@@ -19,7 +19,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 
 > Goal: Users can register, log in, and receive JWTs. Role-based access works end-to-end.
 
-- [ ] **P2-T1** — Create Flyway migration for `users` table (id, name, email, password_hash, tax_id, home_address, role enum [CUSTOMER, SALES_MANAGER, PRODUCT_MANAGER], timestamps). Create `User` entity and `UserRepository`.
+- [x] **P2-T1** — Create Flyway migration for `users` table (id, name, email, password_hash, tax_id, home_address, role enum [CUSTOMER, SALES_MANAGER, PRODUCT_MANAGER], timestamps). Create `User` entity and `UserRepository`.
 - [ ] **P2-T2** — Implement JWT utility (generate, validate, parse with role claims). Implement `JwtAuthenticationFilter`. Configure `SecurityFilterChain`: permit public endpoints, require auth elsewhere, disable CSRF.
 - [ ] **P2-T3** — Implement `AuthService` and `AuthController`: `POST /api/auth/register` (customers only), `POST /api/auth/login`. BCrypt hashing, unique email validation, DTOs.
 - [ ] **P2-T4** — Seed migration with one Sales Manager and one Product Manager account.

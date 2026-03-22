@@ -1,4 +1,16 @@
-import { BookOpen, Compass, Feather, Sparkle } from '@phosphor-icons/react'
+import {
+  BookOpen,
+  CheckCircle,
+  Compass,
+  Feather,
+  Sparkle,
+  WarningCircle,
+} from '@phosphor-icons/react'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+
+import { getHealthStatus } from '../services/healthService'
+import type { HealthResponse } from '../types/health'
 
 const featuredBooks = [
   {
@@ -33,7 +45,59 @@ const featuredBooks = [
   },
 ] as const
 
+interface HealthState {
+  data: HealthResponse | null
+  error: string | null
+  isLoading: boolean
+}
+
 function HomePage() {
+  const [healthState, setHealthState] = useState<HealthState>({
+    data: null,
+    error: null,
+    isLoading: true,
+  })
+
+  useEffect(() => {
+    let isActive = true
+
+    async function loadHealthStatus() {
+      try {
+        const data = await getHealthStatus()
+
+        if (!isActive) {
+          return
+        }
+
+        setHealthState({
+          data,
+          error: null,
+          isLoading: false,
+        })
+      } catch (error: unknown) {
+        if (!isActive) {
+          return
+        }
+
+        const message = axios.isAxiosError(error)
+          ? error.message
+          : 'Unable to reach backend health endpoint.'
+
+        setHealthState({
+          data: null,
+          error: message,
+          isLoading: false,
+        })
+      }
+    }
+
+    void loadHealthStatus()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
+
   return (
     <main className="min-h-screen bg-parchment-50">
       <section className="mx-auto max-w-content px-8 py-24">
@@ -126,6 +190,44 @@ function HomePage() {
                 Axios client ready for JWT attachment and API error propagation.
               </li>
             </ul>
+
+            <div className="mt-10 border border-parchment-200 bg-white p-6">
+              <span className="block text-[10px] font-semibold uppercase tracking-eyebrow text-crimson-700">
+                Backend Health
+              </span>
+              <div className="mt-4 min-h-28">
+                {healthState.isLoading ? (
+                  <p className="text-sm text-ink-500">Checking API connectivity...</p>
+                ) : null}
+
+                {!healthState.isLoading && healthState.data ? (
+                  <div className="space-y-3 text-sm text-ink-800">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="text-lg text-crimson-700" />
+                      <span className="font-medium">
+                        {healthState.data.application} is {healthState.data.status}.
+                      </span>
+                    </div>
+                    <p className="text-ink-500">
+                      Profiles: {healthState.data.profiles.join(', ') || 'default'}
+                    </p>
+                    <p className="text-ink-500">
+                      Updated {new Date(healthState.data.timestamp).toLocaleString()}
+                    </p>
+                  </div>
+                ) : null}
+
+                {!healthState.isLoading && healthState.error ? (
+                  <div className="space-y-3 text-sm text-ink-800">
+                    <div className="flex items-center gap-3">
+                      <WarningCircle className="text-lg text-crimson-700" />
+                      <span className="font-medium">Backend health check unavailable.</span>
+                    </div>
+                    <p className="text-ink-500">{healthState.error}</p>
+                  </div>
+                ) : null}
+              </div>
+            </div>
           </aside>
         </div>
       </section>

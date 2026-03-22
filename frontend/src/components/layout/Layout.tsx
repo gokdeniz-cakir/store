@@ -11,48 +11,52 @@ import {
 } from '@phosphor-icons/react'
 import { Link, Outlet } from 'react-router-dom'
 
+import { useAuth } from '../../hooks/useAuth'
+
 const primaryNavLinks = [
-  { href: '#hero', label: 'Limited Editions' },
-  { href: '#new-releases', label: 'New Releases' },
-  { href: '#collections', label: 'Collections' },
-  { href: '#editors-choice', label: 'Fiction' },
-  { href: '#reading-room', label: 'Non-Fiction' },
-  { href: '#atelier', label: 'Gifts' },
+  { href: '/#hero', label: 'Limited Editions' },
+  { href: '/#new-releases', label: 'New Releases' },
+  { href: '/#collections', label: 'Collections' },
+  { href: '/#editors-choice', label: 'Fiction' },
+  { href: '/#reading-room', label: 'Non-Fiction' },
+  { href: '/#atelier', label: 'Gifts' },
 ] as const
 
 const exploreLinks = [
-  { href: '#new-releases', label: 'New Releases' },
-  { href: '#collections', label: 'Curated Libraries' },
-  { href: '#hero', label: 'Limited Editions' },
-  { href: '#editors-choice', label: 'Editor’s Choice' },
-  { href: '#atelier', label: 'Gift Services' },
+  { href: '/#new-releases', label: 'New Releases' },
+  { href: '/#collections', label: 'Curated Libraries' },
+  { href: '/#hero', label: 'Limited Editions' },
+  { href: '/#editors-choice', label: 'Editor’s Choice' },
+  { href: '/#atelier', label: 'Gift Services' },
 ] as const
 
 const supportLinks = [
-  { href: '#atelier', label: 'Customer Service' },
-  { href: '#atelier', label: 'Delivery & Returns' },
-  { href: '#atelier', label: 'FAQs' },
-  { href: '#atelier', label: 'Contact Aurelia' },
+  { href: '/#atelier', label: 'Customer Service' },
+  { href: '/#atelier', label: 'Delivery & Returns' },
+  { href: '/#atelier', label: 'FAQs' },
+  { href: '/#atelier', label: 'Contact Aurelia' },
   { href: '/design-reference.html', label: 'Design Reference' },
 ] as const
 
 const legalLinks = [
-  { href: '#atelier', label: 'Privacy Policy' },
-  { href: '#atelier', label: 'Terms & Conditions' },
-  { href: '#atelier', label: 'Cookie Policy' },
+  { href: '/#atelier', label: 'Privacy Policy' },
+  { href: '/#atelier', label: 'Terms & Conditions' },
+  { href: '/#atelier', label: 'Cookie Policy' },
 ] as const
 
 const socialLinks = [
-  { href: '#atelier', icon: InstagramLogo, label: 'Instagram' },
-  { href: '#atelier', icon: XLogo, label: 'X' },
-  { href: '#atelier', icon: FacebookLogo, label: 'Facebook' },
-  { href: '#atelier', icon: YoutubeLogo, label: 'YouTube' },
+  { href: '/#atelier', icon: InstagramLogo, label: 'Instagram' },
+  { href: '/#atelier', icon: XLogo, label: 'X' },
+  { href: '/#atelier', icon: FacebookLogo, label: 'Facebook' },
+  { href: '/#atelier', icon: YoutubeLogo, label: 'YouTube' },
 ] as const
 
 const cartItemCount = 2
 
 function Layout() {
   const currentYear = new Date().getFullYear()
+  const { isAuthenticated, user } = useAuth()
+  const accountHref = isAuthenticated ? '/account' : '/login'
 
   return (
     <div className="flex min-h-screen flex-col bg-parchment-50 text-ink-900">
@@ -92,13 +96,13 @@ function Layout() {
               >
                 <MagnifyingGlass className="text-2xl" />
               </button>
-              <button
-                aria-label="View your account"
+              <Link
+                aria-label={isAuthenticated ? 'View your account' : 'Sign in or register'}
                 className="transition-colors hover:text-crimson-700"
-                type="button"
+                to={accountHref}
               >
                 <User className="text-2xl" />
-              </button>
+              </Link>
               <button
                 aria-label="View your wishlist"
                 className="transition-colors hover:text-crimson-700"
@@ -128,6 +132,18 @@ function Layout() {
                   </a>
                 </li>
               ))}
+              {user?.role !== 'CUSTOMER' ? (
+                <li>
+                  <Link className="nav-link hover:text-crimson-700" to="/admin">
+                    Admin
+                  </Link>
+                </li>
+              ) : null}
+              <li>
+                <Link className="nav-link hover:text-crimson-700" to={accountHref}>
+                  {isAuthenticated ? 'Account' : 'Sign In'}
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>

@@ -11,7 +11,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 - [x] **P1-T1** — Initialize Spring Boot project (Java 17+, Spring Web, Data JPA, Security, PostgreSQL, Lombok, Validation, Flyway). Configure PostgreSQL connection in `application.properties` and `application-dev.properties`. Add `.gitignore`. Verify startup.
 - [x] **P1-T2** — Initialize React app (Vite + TypeScript). Install `react-router-dom`, `axios`, `@phosphor-icons/react`. Configure Tailwind CSS with the Aurelia design tokens (parchment, ink, crimson, gold colors; Playfair Display + Inter fonts). Add the reference HTML to `public/design-reference.html`. Configure axios instance with base URL and interceptors.
 - [x] **P1-T3** — Configure CORS in Spring Boot. Create `GET /api/health` endpoint. Set up global exception handler (`@RestControllerAdvice`) with `ErrorResponseDTO`. Verify frontend can call the health endpoint.
-- [ ] **P1-T4** — Build the shared layout shell from the reference design: announcement bar, header (logo, nav links, icon buttons for search/account/wishlist/cart with badge), footer (4-column grid, newsletter form, social links, legal links). This is the `Layout` component that wraps all pages.
+- [x] **P1-T4** — Build the shared layout shell from the reference design: announcement bar, header (logo, nav links, icon buttons for search/account/wishlist/cart with badge), footer (4-column grid, newsletter form, social links, legal links). This is the `Layout` component that wraps all pages.
 
 ---
 

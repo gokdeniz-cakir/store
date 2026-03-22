@@ -1,0 +1,459 @@
+<html lang="en" vid="0"><head vid="1">
+    <meta charset="UTF-8" vid="2">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" vid="3">
+    <title vid="4">Aurelia Editions | Fine Books &amp; Collections</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17" vid="5"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web" vid="6"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" vid="7">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" vid="8">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&amp;display=swap" rel="stylesheet" vid="9">
+    <script vid="10">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        parchment: {
+                            50: '#fcfbf8',
+                            100: '#f5f4ef',
+                            200: '#e8e5dc',
+                            300: '#d8d2c4',
+                        },
+                        ink: {
+                            900: '#1c1917',
+                            800: '#292524',
+                            500: '#78716c',
+                        },
+                        crimson: {
+                            700: '#7a2222',
+                            800: '#5c1717',
+                        },
+                        gold: {
+                            500: '#c5a059',
+                            600: '#a38241',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style vid="11">
+        .book-spine-left {
+            box-shadow: inset 8px 0 16px -8px rgba(0,0,0,0.4), inset -2px 0 4px -2px rgba(255,255,255,0.2);
+            border-left: 6px solid rgba(0,0,0,0.15);
+        }
+        .book-shadow {
+            box-shadow: 12px 12px 24px -10px rgba(0,0,0,0.25);
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -4px;
+            left: 50%;
+            background-color: currentColor;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-parchment-50 text-ink-900 font-sans antialiased flex flex-col min-h-screen" vid="12">
+
+    
+    <div class="bg-ink-900 text-white text-[11px] font-medium uppercase tracking-[0.2em] py-2.5 px-4 text-center" vid="13">
+        Complimentary premium shipping on all international orders over $300
+    </div>
+
+    
+    <header class="bg-parchment-50/95 backdrop-blur-sm sticky top-0 z-50 border-b border-parchment-200" vid="14">
+        
+        <div class="max-w-[1440px] mx-auto px-8 py-6 flex justify-between items-center" vid="15">
+            
+            <div class="flex items-center space-x-4 w-1/3" vid="16">
+                <button class="text-xs uppercase tracking-wider text-ink-500 hover:text-ink-900 flex items-center gap-1 transition-colors" vid="17">
+                    USD $ <i class="ph ph-caret-down" vid="18"></i>
+                </button>
+            </div>
+
+            
+            <div class="w-1/3 text-center" vid="19">
+                <a href="#" class="inline-block text-3xl md:text-4xl font-serif tracking-tight text-ink-900 leading-none" vid="20">
+                    AURELIA<br vid="21">
+                    <span class="text-sm tracking-[0.4em] font-sans text-ink-500 uppercase mt-2 block" vid="22">Editions</span>
+                </a>
+            </div>
+
+            
+            <div class="w-1/3 flex justify-end items-center space-x-6 text-ink-800" vid="23">
+                <button class="hover:text-crimson-700 transition-colors" vid="24"><i class="ph ph-magnifying-glass text-2xl" vid="25"></i></button>
+                <button class="hover:text-crimson-700 transition-colors" vid="26"><i class="ph ph-user text-2xl" vid="27"></i></button>
+                <button class="hover:text-crimson-700 transition-colors" vid="28"><i class="ph ph-heart text-2xl" vid="29"></i></button>
+                <button class="hover:text-crimson-700 transition-colors relative" vid="30">
+                    <i class="ph ph-tote text-2xl" vid="31"></i>
+                    <span class="absolute -top-1 -right-2 bg-crimson-700 text-white text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center" vid="32">2</span>
+                </button>
+            </div>
+        </div>
+
+        
+        <nav class="pb-5" vid="33">
+            <ul class="flex justify-center space-x-12 text-[12px] font-medium uppercase tracking-[0.15em] text-ink-800" vid="34">
+                <li vid="35"><a href="#" class="nav-link hover:text-crimson-700 transition-colors" vid="36">New Releases</a></li>
+                <li vid="37"><a href="#" class="nav-link hover:text-crimson-700 transition-colors" vid="38">Fiction</a></li>
+                <li vid="39"><a href="#" class="nav-link hover:text-crimson-700 transition-colors" vid="40">Non-Fiction</a></li>
+                <li vid="41"><a href="#" class="nav-link hover:text-crimson-700 transition-colors" vid="42">Limited Editions</a></li>
+                <li vid="43"><a href="#" class="nav-link hover:text-crimson-700 transition-colors" vid="44">Collections</a></li>
+                <li vid="45"><a href="#" class="nav-link hover:text-crimson-700 transition-colors" vid="46">Gifts</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="flex-grow" vid="47">
+        
+        <section class="w-full min-h-[75vh] bg-[#141d26] flex items-center relative overflow-hidden" vid="48">
+            
+            <div class="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-400/20 via-transparent to-transparent" vid="49"></div>
+            
+            <div class="max-w-[1440px] mx-auto px-12 w-full grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10 items-center py-20" vid="50">
+                
+                
+                <div class="text-white lg:pr-12" vid="51">
+                    <span class="inline-block px-3 py-1 border border-gold-500/50 text-gold-500 text-[10px] uppercase tracking-[0.25em] mb-6" vid="52">Masterpiece Edition</span>
+                    <h1 class="text-5xl md:text-7xl font-serif mb-6 leading-[1.1]" vid="53">The Divine<br vid="54"><i class="font-light text-slate-300" vid="55">Comedy</i></h1>
+                    <p class="text-lg font-light text-slate-300 mb-10 max-w-lg leading-relaxed" vid="56">
+                        Dante Alighieri's monumental epic, presented in an exquisite quarter-bound leather edition. Featuring magnificent new engravings and a slipcase bound in Italian silk.
+                    </p>
+                    <div class="flex items-center space-x-6" vid="57">
+                        <a href="#" class="inline-block bg-white text-ink-900 px-8 py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-gold-500 hover:text-white transition-all duration-300" vid="58">
+                            Explore Edition
+                        </a>
+                        <span class="text-slate-400 font-serif italic text-lg" vid="59">$295.00</span>
+                    </div>
+                </div>
+
+                
+                <div class="flex justify-center lg:justify-end perspective-1000" vid="60">
+                    <div class="w-[340px] aspect-[2/3] bg-[#0f141a] book-shadow relative flex flex-col items-center justify-center p-8 text-center book-spine-left group transform -rotate-2 hover:rotate-0 hover:scale-105 transition-all duration-700 ease-out border border-white/10" vid="61">
+                        
+                        <div class="absolute inset-4 border border-gold-500/30" vid="62"></div>
+                        <div class="absolute inset-[20px] border border-gold-500/10" vid="63"></div>
+                        
+                        
+                        <div class="z-10 flex flex-col items-center" vid="64">
+                            <i class="ph ph-star-four text-gold-500 text-2xl mb-6" vid="65"></i>
+                            <h2 class="font-serif text-white text-3xl uppercase tracking-widest leading-snug mb-2" vid="66">The<br vid="67">Divine<br vid="68">Comedy</h2>
+                            <p class="text-gold-500/80 font-serif italic text-sm mt-4" vid="69">Dante Alighieri</p>
+                            <div class="w-12 h-[1px] bg-gold-500/50 mt-8 mb-8" vid="70"></div>
+                            <i class="ph ph-fire text-gold-500/70 text-3xl" vid="71"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        
+        <section class="py-24 max-w-[1440px] mx-auto px-8" vid="72">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-parchment-200 pb-6" vid="73">
+                <div vid="74">
+                    <h2 class="text-4xl font-serif text-ink-900 mb-2" vid="75">Curated Libraries</h2>
+                    <p class="text-ink-500 font-light" vid="76">Explore our meticulously crafted genres and thematic collections.</p>
+                </div>
+                <a href="#" class="text-xs font-semibold uppercase tracking-[0.15em] text-ink-900 border-b border-ink-900 pb-1 hover:text-crimson-700 hover:border-crimson-700 transition-colors mt-6 md:mt-0" vid="77">
+                    View All Categories
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" vid="78">
+                
+                <a href="#" class="group block relative overflow-hidden aspect-[4/5] bg-[#2a3036] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMmEzMDM2Ij48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjMzU0MDQ4IiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')] shadow-md" vid="79">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" vid="80"></div>
+                    <div class="absolute inset-0 p-8 flex flex-col justify-end text-white" vid="81">
+                        <i class="ph ph-planet text-3xl mb-4 text-slate-300 group-hover:-translate-y-2 transition-transform duration-500" vid="82"></i>
+                        <h3 class="font-serif text-2xl mb-2" vid="83">Science Fiction &amp; Fantasy</h3>
+                        <p class="text-sm text-slate-300 font-light opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0" vid="84">Otherworldly realms in spectacular bindings.</p>
+                    </div>
+                </a>
+
+                
+                <a href="#" class="group block relative overflow-hidden aspect-[4/5] bg-[#4a2e2e] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjNGEyZTJlIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjNWEzZDNkIiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')] shadow-md" vid="85">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" vid="86"></div>
+                    <div class="absolute inset-0 p-8 flex flex-col justify-end text-white" vid="87">
+                        <i class="ph ph-bank text-3xl mb-4 text-slate-300 group-hover:-translate-y-2 transition-transform duration-500" vid="88"></i>
+                        <h3 class="font-serif text-2xl mb-2" vid="89">History &amp; Antiquity</h3>
+                        <p class="text-sm text-slate-300 font-light opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0" vid="90">The chronicles of civilization, preserved.</p>
+                    </div>
+                </a>
+
+                
+                <a href="#" class="group block relative overflow-hidden aspect-[4/5] bg-[#2d4234] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMmQ0MjM0Ij48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjM2Q1NjQ2IiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')] shadow-md" vid="91">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" vid="92"></div>
+                    <div class="absolute inset-0 p-8 flex flex-col justify-end text-white" vid="93">
+                        <i class="ph ph-feather text-3xl mb-4 text-slate-300 group-hover:-translate-y-2 transition-transform duration-500" vid="94"></i>
+                        <h3 class="font-serif text-2xl mb-2" vid="95">Classic Fiction</h3>
+                        <p class="text-sm text-slate-300 font-light opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0" vid="96">Timeless stories in definitive editions.</p>
+                    </div>
+                </a>
+
+                
+                <a href="#" class="group block relative overflow-hidden aspect-[4/5] bg-[#232b38] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMjMyYjM4Ij48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjMzIyZjNmIiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')] shadow-md" vid="97">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" vid="98"></div>
+                    <div class="absolute inset-0 p-8 flex flex-col justify-end text-white" vid="99">
+                        <i class="ph ph-magnifying-glass text-3xl mb-4 text-slate-300 group-hover:-translate-y-2 transition-transform duration-500" vid="100"></i>
+                        <h3 class="font-serif text-2xl mb-2" vid="101">Mystery &amp; Crime</h3>
+                        <p class="text-sm text-slate-300 font-light opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0" vid="102">Thrilling tales bound with intrigue.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        
+        <section class="py-24 bg-white border-y border-parchment-200" vid="103">
+            <div class="max-w-[1440px] mx-auto px-8" vid="104">
+                <div class="text-center mb-16" vid="105">
+                    <span class="text-crimson-700 text-[10px] uppercase tracking-[0.3em] font-semibold block mb-4" vid="106">Just Arrived</span>
+                    <h2 class="text-4xl font-serif text-ink-900" vid="107">New &amp; Notable Editions</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10" vid="108">
+                    
+                    
+                    <div class="group cursor-pointer" vid="109">
+                        <div class="w-full aspect-[2/3] bg-[#c4a97f] book-spine-left book-shadow relative flex items-center justify-center p-4 mb-6 transition-transform duration-500 group-hover:-translate-y-2" vid="110">
+                            <div class="absolute inset-3 border border-ink-900/20" vid="111"></div>
+                            <div class="text-center z-10" vid="112">
+                                <i class="ph ph-mountains text-ink-900/60 text-2xl mb-3" vid="113"></i>
+                                <h3 class="font-serif text-ink-900 text-xl leading-tight uppercase tracking-wide" vid="114">Dune</h3>
+                            </div>
+                        </div>
+                        <div class="text-center" vid="115">
+                            <h4 class="font-serif text-lg text-ink-900 group-hover:text-crimson-700 transition-colors" vid="116">Dune</h4>
+                            <p class="text-ink-500 text-sm mb-2" vid="117">Frank Herbert</p>
+                            <p class="font-sans font-medium" vid="118">$125.00</p>
+                        </div>
+                    </div>
+
+                    
+                    <div class="group cursor-pointer" vid="119">
+                        <div class="w-full aspect-[2/3] bg-[#2a4552] book-spine-left book-shadow relative flex items-center justify-center p-4 mb-6 transition-transform duration-500 group-hover:-translate-y-2" vid="120">
+                            <div class="absolute inset-3 border border-white/20" vid="121"></div>
+                            <div class="text-center z-10" vid="122">
+                                <i class="ph ph-waves text-white/60 text-2xl mb-3" vid="123"></i>
+                                <h3 class="font-serif text-white text-xl leading-tight uppercase tracking-wide" vid="124">Moby<br vid="125">Dick</h3>
+                            </div>
+                        </div>
+                        <div class="text-center" vid="126">
+                            <h4 class="font-serif text-lg text-ink-900 group-hover:text-crimson-700 transition-colors" vid="127">Moby Dick</h4>
+                            <p class="text-ink-500 text-sm mb-2" vid="128">Herman Melville</p>
+                            <p class="font-sans font-medium" vid="129">$140.00</p>
+                        </div>
+                    </div>
+
+                    
+                    <div class="group cursor-pointer" vid="130">
+                        <div class="w-full aspect-[2/3] bg-[#823a3a] book-spine-left book-shadow relative flex items-center justify-center p-4 mb-6 transition-transform duration-500 group-hover:-translate-y-2" vid="131">
+                            <div class="absolute inset-3 border border-gold-500/40" vid="132"></div>
+                            <div class="text-center z-10" vid="133">
+                                <i class="ph ph-bat text-gold-500/80 text-2xl mb-3" vid="134"></i>
+                                <h3 class="font-serif text-gold-500 text-xl leading-tight uppercase tracking-wide" vid="135">Dracula</h3>
+                            </div>
+                        </div>
+                        <div class="text-center" vid="136">
+                            <h4 class="font-serif text-lg text-ink-900 group-hover:text-crimson-700 transition-colors" vid="137">Dracula</h4>
+                            <p class="text-ink-500 text-sm mb-2" vid="138">Bram Stoker</p>
+                            <p class="font-sans font-medium" vid="139">$95.00</p>
+                        </div>
+                    </div>
+
+                    
+                    <div class="group cursor-pointer" vid="140">
+                        <div class="w-full aspect-[2/3] bg-[#d9d1c7] book-spine-left book-shadow relative flex items-center justify-center p-4 mb-6 transition-transform duration-500 group-hover:-translate-y-2" vid="141">
+                            <div class="absolute inset-3 border border-ink-900/10" vid="142"></div>
+                            <div class="text-center z-10" vid="143">
+                                <i class="ph ph-flower-lotus text-ink-800/60 text-2xl mb-3" vid="144"></i>
+                                <h3 class="font-serif text-ink-800 text-lg leading-tight uppercase tracking-wide" vid="145">Pride &amp;<br vid="146">Prejudice</h3>
+                            </div>
+                        </div>
+                        <div class="text-center" vid="147">
+                            <h4 class="font-serif text-lg text-ink-900 group-hover:text-crimson-700 transition-colors" vid="148">Pride &amp; Prejudice</h4>
+                            <p class="text-ink-500 text-sm mb-2" vid="149">Jane Austen</p>
+                            <p class="font-sans font-medium" vid="150">$85.00</p>
+                        </div>
+                    </div>
+
+                    
+                    <div class="group cursor-pointer" vid="151">
+                        <div class="w-full aspect-[2/3] bg-[#222222] book-spine-left book-shadow relative flex items-center justify-center p-4 mb-6 transition-transform duration-500 group-hover:-translate-y-2" vid="152">
+                            <div class="absolute inset-3 border border-[#ff4a4a]/40" vid="153"></div>
+                            <div class="text-center z-10" vid="154">
+                                <i class="ph ph-eye text-[#ff4a4a] text-2xl mb-3" vid="155"></i>
+                                <h3 class="font-serif text-white text-2xl leading-tight uppercase tracking-widest" vid="156">1984</h3>
+                            </div>
+                        </div>
+                        <div class="text-center" vid="157">
+                            <h4 class="font-serif text-lg text-ink-900 group-hover:text-crimson-700 transition-colors" vid="158">1984</h4>
+                            <p class="text-ink-500 text-sm mb-2" vid="159">George Orwell</p>
+                            <p class="font-sans font-medium" vid="160">$110.00</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="text-center mt-16" vid="161">
+                    <a href="#" class="inline-block border border-ink-900 text-ink-900 px-10 py-4 text-xs uppercase tracking-[0.15em] font-semibold hover:bg-ink-900 hover:text-white transition-colors" vid="162">
+                        Shop All Books
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="py-24 max-w-[1440px] mx-auto px-8" vid="163">
+            <div class="bg-parchment-100 grid grid-cols-1 lg:grid-cols-2 overflow-hidden border border-parchment-200" vid="164">
+                
+                
+                <div class="bg-[#1c2920] relative p-16 flex items-center justify-center min-h-[500px]" vid="165">
+                    <div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMWMyOTIwIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlPSIjMmQ0MjM0IiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')]" vid="166"></div>
+                    
+                    
+                    <div class="relative z-10 flex" vid="167">
+                        <div class="w-[200px] aspect-[2/3] bg-[#2d4234] book-spine-left book-shadow transform -rotate-12 translate-x-10 relative z-0 flex items-center justify-center border border-white/10" vid="168">
+                            <div class="absolute inset-2 border border-gold-500/20" vid="169"></div>
+                        </div>
+                        <div class="w-[240px] aspect-[2/3] bg-[#1a261e] book-spine-left book-shadow relative z-10 flex flex-col items-center justify-center p-6 text-center border border-white/10" vid="170">
+                             <div class="absolute inset-3 border border-gold-500/40" vid="171"></div>
+                             <i class="ph ph-leaf text-gold-500 text-3xl mb-4" vid="172"></i>
+                             <h3 class="font-serif text-white text-xl uppercase tracking-widest" vid="173">Walden</h3>
+                             <div class="w-8 h-[1px] bg-gold-500/50 mt-4" vid="174"></div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="p-16 lg:p-24 flex flex-col justify-center" vid="175">
+                    <div class="flex items-center space-x-2 mb-6" vid="176">
+                        <i class="ph-fill ph-star text-gold-500 text-sm" vid="177"></i>
+                        <span class="text-[10px] uppercase tracking-[0.2em] font-semibold text-ink-900" vid="178">Editor's Choice</span>
+                    </div>
+                    <h2 class="text-4xl lg:text-5xl font-serif text-ink-900 mb-6 leading-tight" vid="179">Walden &amp;<br vid="180">Civil Disobedience</h2>
+                    <p class="text-ink-500 font-light text-lg mb-8 leading-relaxed" vid="181">
+                        Henry David Thoreau's reflections on simple living in natural surroundings, beautifully paired with his essay on individual resistance. Bound in tactile green cloth with gold blocking, featuring specially commissioned woodcut illustrations that capture the spirit of Concord.
+                    </p>
+                    <ul class="space-y-3 mb-10 text-sm text-ink-800" vid="182">
+                        <li class="flex items-center" vid="183"><i class="ph ph-check text-crimson-700 mr-3 text-lg" vid="184"></i> Bound in blocked cloth</li>
+                        <li class="flex items-center" vid="185"><i class="ph ph-check text-crimson-700 mr-3 text-lg" vid="186"></i> Set in Caslon with 288 pages</li>
+                        <li class="flex items-center" vid="187"><i class="ph ph-check text-crimson-700 mr-3 text-lg" vid="188"></i> Frontispiece and 10 integrated woodcuts</li>
+                    </ul>
+                    <div vid="189">
+                        <a href="#" class="inline-block bg-ink-900 text-white px-8 py-4 text-xs uppercase tracking-[0.15em] font-semibold hover:bg-crimson-700 transition-colors" vid="190">
+                            View Details - $65.00
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        
+        <section class="border-t border-parchment-200 bg-parchment-50 py-16" vid="191">
+            <div class="max-w-[1440px] mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-parchment-200" vid="192">
+                <div class="flex flex-col items-center px-4" vid="193">
+                    <i class="ph ph-package text-4xl text-ink-400 mb-4" vid="194"></i>
+                    <h4 class="font-serif text-xl text-ink-900 mb-2" vid="195">Exquisite Packaging</h4>
+                    <p class="text-sm text-ink-500 font-light" vid="196">Every order is carefully wrapped in bespoke protective packaging.</p>
+                </div>
+                <div class="flex flex-col items-center px-4 pt-8 md:pt-0" vid="197">
+                    <i class="ph ph-globe-hemisphere-west text-4xl text-ink-400 mb-4" vid="198"></i>
+                    <h4 class="font-serif text-xl text-ink-900 mb-2" vid="199">Worldwide Delivery</h4>
+                    <p class="text-sm text-ink-500 font-light" vid="200">Secure, trackable shipping to bibliophiles across the globe.</p>
+                </div>
+                <div class="flex flex-col items-center px-4 pt-8 md:pt-0" vid="201">
+                    <i class="ph ph-seal-check text-4xl text-ink-400 mb-4" vid="202"></i>
+                    <h4 class="font-serif text-xl text-ink-900 mb-2" vid="203">The Aurelia Guarantee</h4>
+                    <p class="text-sm text-ink-500 font-light" vid="204">Uncompromising quality in typography, illustration, and binding.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    
+    <footer class="bg-[#111111] text-slate-400 pt-24 pb-12 border-t-4 border-crimson-700" vid="205">
+        <div class="max-w-[1440px] mx-auto px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16" vid="206">
+            
+            
+            <div class="lg:col-span-4 pr-8" vid="207">
+                <a href="#" class="inline-block text-2xl font-serif tracking-tight text-white leading-none mb-6" vid="208">
+                    AURELIA<br vid="209">
+                    <span class="text-[10px] tracking-[0.4em] font-sans text-slate-500 uppercase mt-1 block" vid="210">Editions</span>
+                </a>
+                <p class="text-sm font-light leading-relaxed mb-8" vid="211">
+                    Publishing the world's greatest literature in beautiful, definitive editions. Every book is a masterpiece of typography, illustration, and bookbinding craft.
+                </p>
+                <div class="flex space-x-5" vid="212">
+                    <a href="#" class="text-slate-400 hover:text-white transition-colors" vid="213"><i class="ph ph-instagram-logo text-2xl" vid="214"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-white transition-colors" vid="215"><i class="ph ph-twitter-logo text-2xl" vid="216"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-white transition-colors" vid="217"><i class="ph ph-facebook-logo text-2xl" vid="218"></i></a>
+                    <a href="#" class="text-slate-400 hover:text-white transition-colors" vid="219"><i class="ph ph-youtube-logo text-2xl" vid="220"></i></a>
+                </div>
+            </div>
+
+            
+            <div class="lg:col-span-2" vid="221">
+                <h4 class="text-white text-xs uppercase tracking-widest font-semibold mb-6" vid="222">Explore</h4>
+                <ul class="space-y-4 text-sm font-light" vid="223">
+                    <li vid="224"><a href="#" class="hover:text-gold-500 transition-colors" vid="225">New Releases</a></li>
+                    <li vid="226"><a href="#" class="hover:text-gold-500 transition-colors" vid="227">Bestsellers</a></li>
+                    <li vid="228"><a href="#" class="hover:text-gold-500 transition-colors" vid="229">Limited Editions</a></li>
+                    <li vid="230"><a href="#" class="hover:text-gold-500 transition-colors" vid="231">Gift Cards</a></li>
+                    <li vid="232"><a href="#" class="hover:text-gold-500 transition-colors" vid="233">Request a Catalogue</a></li>
+                </ul>
+            </div>
+
+            
+            <div class="lg:col-span-2" vid="234">
+                <h4 class="text-white text-xs uppercase tracking-widest font-semibold mb-6" vid="235">Support</h4>
+                <ul class="space-y-4 text-sm font-light" vid="236">
+                    <li vid="237"><a href="#" class="hover:text-gold-500 transition-colors" vid="238">Customer Service</a></li>
+                    <li vid="239"><a href="#" class="hover:text-gold-500 transition-colors" vid="240">Delivery &amp; Returns</a></li>
+                    <li vid="241"><a href="#" class="hover:text-gold-500 transition-colors" vid="242">FAQs</a></li>
+                    <li vid="243"><a href="#" class="hover:text-gold-500 transition-colors" vid="244">Contact Us</a></li>
+                    <li vid="245"><a href="#" class="hover:text-gold-500 transition-colors" vid="246">About Aurelia</a></li>
+                </ul>
+            </div>
+
+            
+            <div class="lg:col-span-4" vid="247">
+                <h4 class="text-white text-xs uppercase tracking-widest font-semibold mb-6" vid="248">The Reading Room Newsletter</h4>
+                <p class="text-sm font-light mb-6" vid="249">Subscribe to receive updates on new editions, exclusive content, and special offers.</p>
+                <form class="flex border-b border-slate-700 pb-2 focus-within:border-white transition-colors" vid="250">
+                    <input type="email" placeholder="Email Address" class="bg-transparent w-full text-white placeholder-slate-600 focus:outline-none text-sm font-light" vid="251">
+                    <button type="submit" class="text-xs uppercase tracking-widest font-semibold text-white hover:text-gold-500 transition-colors pl-4" vid="252">Subscribe</button>
+                </form>
+            </div>
+
+        </div>
+
+        
+        <div class="max-w-[1440px] mx-auto px-8 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-xs font-light" vid="253">
+            <p vid="254">© 2024 Aurelia Editions. All rights reserved.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0" vid="255">
+                <a href="#" class="hover:text-white transition-colors" vid="256">Privacy Policy</a>
+                <a href="#" class="hover:text-white transition-colors" vid="257">Terms &amp; Conditions</a>
+                <a href="#" class="hover:text-white transition-colors" vid="258">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
+
+
+</body></html>

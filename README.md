@@ -50,11 +50,9 @@ GRANT ALL PRIVILEGES ON DATABASE aurelia_editions TO aurelia_user;
 ```bash
 cd backend
 
-# Copy and configure dev properties
-cp src/main/resources/application-dev.properties.example src/main/resources/application-dev.properties
 # Edit with your DB credentials, JWT secret, and SMTP settings
 
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 API available at `http://localhost:8080`.
@@ -68,7 +66,7 @@ npm install
 npm run dev
 ```
 
-App available at `http://localhost:3131`.
+App available at `http://localhost:5173`.
 
 ## Project Structure
 

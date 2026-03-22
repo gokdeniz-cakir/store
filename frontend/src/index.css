@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+    color: #1c1917;
+    background-color: #fcfbf8;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply m-0 min-h-screen bg-parchment-50 font-sans text-ink-900;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  a {
+    @apply text-inherit no-underline transition-colors duration-300;
+  }
+}
+
+@layer components {
+  .book-spine-left {
+    border-left: 6px solid rgba(0, 0, 0, 0.15);
+    box-shadow:
+      inset 8px 0 16px -8px rgba(0, 0, 0, 0.4),
+      inset -2px 0 4px -2px rgba(255, 255, 255, 0.2);
+  }
+
+  .book-shadow {
+    box-shadow: 12px 12px 24px -10px rgba(0, 0, 0, 0.25);
+  }
+
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+}

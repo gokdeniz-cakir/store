@@ -1,6 +1,6 @@
 import api from './api'
 
-import type { BookPageResponse, RawBookPageResponse } from '../types/catalog'
+import type { Book, BookPageResponse, RawBookPageResponse } from '../types/catalog'
 
 interface GetBooksParams {
   categoryId?: number
@@ -36,4 +36,9 @@ export async function getBooks(params: GetBooksParams) {
   })
 
   return normalizePageResponse(response.data)
+}
+
+export async function getBook(bookId: number) {
+  const response = await api.get<Book>(`/books/${bookId}`)
+  return response.data
 }

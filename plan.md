@@ -35,7 +35,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 - [x] **P3-T2** — Implement `BookRepository` (search by title/author/description ILIKE, sort by price/popularity, pagination), `BookService` (CRUD, search with filters, out-of-stock handling), and `BookController` (public GET, PRODUCT_MANAGER write endpoints). Implement `CategoryService` and `CategoryController` (CRUD, public reads).
 - [x] **P3-T3** — Seed migration with sample categories (Fiction, Non-Fiction, Sci-Fi & Fantasy, History & Antiquity, Mystery & Crime, Classic Literature) and 15-20 books with cover colors matching the design palette.
 - [x] **P3-T4** — Frontend: Build the book listing page. Recreate the "New & Notable Editions" grid from the reference — book cards with colored covers, spine effect, Phosphor icon, hover lift animation. Add search bar, sort dropdown (price, popularity), and category filter sidebar/nav.
-- [ ] **P3-T5** — Frontend: Build the book detail page — hero section with large book cover rendering, title (Playfair serif), author, price, stock status, description, book specs (edition, ISBN, pages, publisher, language), and an "Add to Cart" button (disabled if out of stock).
+- [x] **P3-T5** — Frontend: Build the book detail page — hero section with large book cover rendering, title (Playfair serif), author, price, stock status, description, book specs (edition, ISBN, pages, publisher, language), and an "Add to Cart" button (disabled if out of stock).
 
 ---
 

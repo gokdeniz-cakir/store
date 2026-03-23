@@ -1,4 +1,5 @@
 import { WarningCircle } from '@phosphor-icons/react'
+import { Link } from 'react-router-dom'
 
 import type { Book } from '../../types/catalog'
 import {
@@ -18,31 +19,33 @@ function BookCard({ book }: BookCardProps) {
 
   return (
     <article className="group flex h-full flex-col">
-      <div
-        className="book-shadow book-spine-left relative flex aspect-[2/3] items-center justify-center overflow-hidden px-5 py-6 transition-transform duration-500 group-hover:-translate-y-2"
-        style={{ backgroundColor: book.coverColor }}
-      >
-        <div className={`absolute inset-3 border ${coverPresentation.borderClassName}`} />
-        <div className="absolute left-0 top-5 bg-black/15 px-3 py-1 text-[9px] uppercase tracking-[0.28em] text-white/80">
-          {book.category.name}
+      <Link className="block" to={`/books/${book.id}`}>
+        <div
+          className="book-shadow book-spine-left relative flex aspect-[2/3] items-center justify-center overflow-hidden px-5 py-6 transition-transform duration-500 group-hover:-translate-y-2"
+          style={{ backgroundColor: book.coverColor }}
+        >
+          <div className={`absolute inset-3 border ${coverPresentation.borderClassName}`} />
+          <div className="absolute left-0 top-5 bg-black/15 px-3 py-1 text-[9px] uppercase tracking-[0.28em] text-white/80">
+            {book.category.name}
+          </div>
+          <div className="relative z-10 text-center">
+            {renderCategoryIcon(
+              book.category.iconName,
+              `mx-auto mb-4 text-[30px] ${coverPresentation.iconClassName}`,
+            )}
+            <h3
+              className={`font-serif text-[1.55rem] uppercase leading-tight tracking-[0.2em] ${coverPresentation.textClassName}`}
+            >
+              {book.title}
+            </h3>
+            <p
+              className={`mt-4 text-xs uppercase tracking-[0.3em] ${coverPresentation.iconClassName}`}
+            >
+              {book.author}
+            </p>
+          </div>
         </div>
-        <div className="relative z-10 text-center">
-          {renderCategoryIcon(
-            book.category.iconName,
-            `mx-auto mb-4 text-[30px] ${coverPresentation.iconClassName}`,
-          )}
-          <h3
-            className={`font-serif text-[1.55rem] uppercase leading-tight tracking-[0.2em] ${coverPresentation.textClassName}`}
-          >
-            {book.title}
-          </h3>
-          <p
-            className={`mt-4 text-xs uppercase tracking-[0.3em] ${coverPresentation.iconClassName}`}
-          >
-            {book.author}
-          </p>
-        </div>
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col border border-t-0 border-parchment-200 bg-white p-6">
         <div className="flex items-start justify-between gap-4">
@@ -101,7 +104,12 @@ function BookCard({ book }: BookCardProps) {
             ) : null}
           </div>
 
-          <span className="text-[10px] uppercase tracking-nav text-ink-500">{book.isbn}</span>
+          <Link
+            className="border border-ink-900 px-4 py-2 text-[10px] uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+            to={`/books/${book.id}`}
+          >
+            View Edition
+          </Link>
         </div>
       </div>
     </article>

@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import PrivateRoute from './components/auth/PrivateRoute'
 import Layout from './components/layout/Layout'
 import AccountPage from './pages/AccountPage'
+import BookDetailPage from './pages/BookDetailPage'
 import AdminPortalPage from './pages/AdminPortalPage'
 import BooksPage from './pages/BooksPage'
 import HomePage from './pages/HomePage'
@@ -16,6 +17,7 @@ function App() {
         <Route element={<Layout />}>
           <Route element={<HomePage />} index />
           <Route element={<BooksPage />} path="books" />
+          <Route element={<BookDetailPage />} path="books/:bookId" />
           <Route element={<LoginPage />} path="login" />
           <Route element={<RegisterPage />} path="register" />
           <Route

@@ -63,6 +63,8 @@ public class SecurityConfig {
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/health").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/books", "/api/books/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/**").permitAll()
 				.requestMatchers("/api/auth/**").permitAll()
 				.anyRequest().authenticated())
 			.httpBasic(AbstractHttpConfigurer::disable)

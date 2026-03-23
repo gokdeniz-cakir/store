@@ -1,0 +1,155 @@
+import {
+  BookOpenText,
+  Books,
+  ChartLine,
+  Package,
+  Percent,
+  Quotes,
+  SignOut,
+  SquaresFour,
+  Tag,
+} from '@phosphor-icons/react'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+
+import { useAuth } from '../../hooks/useAuth'
+
+const primaryLinks = [
+  {
+    description: 'Overview and current phase handoff',
+    icon: SquaresFour,
+    label: 'Dashboard',
+    to: '/admin',
+  },
+  {
+    description: 'Catalogue CRUD and edition editing',
+    icon: Books,
+    label: 'Books',
+    to: '/admin/books',
+  },
+  {
+    description: 'Curated shelf structure and icon mapping',
+    icon: Tag,
+    label: 'Categories',
+    to: '/admin/categories',
+  },
+] as const
+
+const upcomingLinks = [
+  { icon: Package, label: 'Deliveries' },
+  { icon: Quotes, label: 'Moderation' },
+  { icon: Percent, label: 'Discounts' },
+  { icon: ChartLine, label: 'Revenue' },
+] as const
+
+function AdminLayout() {
+  const navigate = useNavigate()
+  const { logout, user } = useAuth()
+
+  function handleLogout() {
+    logout()
+    navigate('/login', { replace: true })
+  }
+
+  return (
+    <div className="min-h-screen bg-[#120f0d] text-white">
+      <div className="grid min-h-screen lg:grid-cols-[290px_minmax(0,1fr)]">
+        <aside className="border-r border-white/10 bg-[#16120f] px-6 py-8">
+          <Link className="inline-block leading-none" to="/admin">
+            <span className="block font-serif text-3xl tracking-tight text-white">AURELIA</span>
+            <span className="mt-2 block text-[11px] uppercase tracking-[0.38em] text-slate-500">
+              Admin
+            </span>
+          </Link>
+
+          <div className="mt-10 border border-gold-500/20 bg-gold-500/10 p-5">
+            <span className="text-[10px] uppercase tracking-eyebrow text-gold-500">
+              Active Role
+            </span>
+            <p className="mt-3 font-serif text-2xl text-white">
+              {user?.role.replaceAll('_', ' ')}
+            </p>
+            <p className="mt-3 text-sm leading-7 text-slate-300">
+              Product managers can edit the live catalog here. Sales tooling follows in
+              the next admin tasks.
+            </p>
+          </div>
+
+          <nav className="mt-10 space-y-2">
+            {primaryLinks.map((link) => {
+              const Icon = link.icon
+
+              return (
+                <NavLink
+                  className={({ isActive }) =>
+                    `block border px-4 py-4 transition-colors ${
+                      isActive
+                        ? 'border-gold-500/50 bg-gold-500/10 text-white'
+                        : 'border-white/10 text-slate-300 hover:border-white/25 hover:bg-white/5 hover:text-white'
+                    }`
+                  }
+                  key={link.label}
+                  to={link.to}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="text-xl text-gold-500" />
+                    <div>
+                      <p className="text-xs uppercase tracking-nav">{link.label}</p>
+                      <p className="mt-1 text-sm normal-case tracking-normal text-slate-400">
+                        {link.description}
+                      </p>
+                    </div>
+                  </div>
+                </NavLink>
+              )
+            })}
+          </nav>
+
+          <div className="mt-10 border-t border-white/10 pt-8">
+            <span className="text-[10px] uppercase tracking-eyebrow text-slate-500">
+              Upcoming Modules
+            </span>
+            <div className="mt-4 space-y-2">
+              {upcomingLinks.map((link) => {
+                const Icon = link.icon
+
+                return (
+                  <div
+                    className="flex items-center gap-3 border border-white/10 px-4 py-3 text-sm text-slate-400"
+                    key={link.label}
+                  >
+                    <Icon className="text-lg text-slate-500" />
+                    <span>{link.label}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col gap-3">
+            <Link
+              className="inline-flex items-center justify-center gap-2 border border-white/15 px-5 py-3 text-xs uppercase tracking-nav text-white transition-colors hover:border-gold-500 hover:bg-gold-500 hover:text-ink-900"
+              to="/"
+            >
+              <BookOpenText className="text-sm" />
+              Return To Storefront
+            </Link>
+            <button
+              className="inline-flex items-center justify-center gap-2 border border-white/15 px-5 py-3 text-xs uppercase tracking-nav text-white transition-colors hover:border-crimson-700 hover:bg-crimson-700"
+              onClick={handleLogout}
+              type="button"
+            >
+              <SignOut className="text-sm" />
+              Sign Out
+            </button>
+          </div>
+        </aside>
+
+        <div className="min-h-screen bg-parchment-50 text-ink-900">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default AdminLayout

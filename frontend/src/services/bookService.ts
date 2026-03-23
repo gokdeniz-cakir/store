@@ -1,6 +1,11 @@
 import api from './api'
 
-import type { Book, BookPageResponse, RawBookPageResponse } from '../types/catalog'
+import type {
+  Book,
+  BookPageResponse,
+  BookRequest,
+  RawBookPageResponse,
+} from '../types/catalog'
 
 interface GetBooksParams {
   categoryId?: number
@@ -41,4 +46,18 @@ export async function getBooks(params: GetBooksParams) {
 export async function getBook(bookId: number) {
   const response = await api.get<Book>(`/books/${bookId}`)
   return response.data
+}
+
+export async function createBook(payload: BookRequest) {
+  const response = await api.post<Book>('/books', payload)
+  return response.data
+}
+
+export async function updateBook(bookId: number, payload: BookRequest) {
+  const response = await api.put<Book>(`/books/${bookId}`, payload)
+  return response.data
+}
+
+export async function deleteBook(bookId: number) {
+  await api.delete(`/books/${bookId}`)
 }

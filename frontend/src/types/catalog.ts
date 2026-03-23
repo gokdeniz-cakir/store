@@ -5,6 +5,12 @@ export interface CatalogCategory {
   iconName: string
 }
 
+export interface CategoryRequest {
+  name: string
+  description: string | null
+  iconName: string
+}
+
 export interface Book {
   id: number
   title: string
@@ -49,4 +55,23 @@ export interface RawBookPageResponse {
   number?: number
   totalElements?: number
   totalPages?: number
+}
+
+export interface BookRequest {
+  title: string
+  author: string
+  isbn: string
+  edition: string
+  description: string | null
+  stockQuantity: number
+  price: number
+  originalPrice: number | null
+  returnPolicy: string | null
+  publisher: string
+  pageCount: number | null
+  language: string | null
+  publicationYear: number | null
+  coverImageUrl: string | null
+  coverColor: string
+  categoryId: number
 }

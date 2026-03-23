@@ -1,7 +1,10 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import PrivateRoute from './components/auth/PrivateRoute'
+import AdminLayout from './components/layout/AdminLayout'
 import Layout from './components/layout/Layout'
+import AdminBooksPage from './pages/AdminBooksPage'
+import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import AccountPage from './pages/AccountPage'
 import BookDetailPage from './pages/BookDetailPage'
 import AdminPortalPage from './pages/AdminPortalPage'
@@ -21,7 +24,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-        <Route element={<HomePage />} index />
+          <Route element={<HomePage />} index />
           <Route element={<BooksPage />} path="books" />
           <Route element={<BookDetailPage />} path="books/:bookId" />
           <Route element={<CartPage />} path="cart" />
@@ -75,16 +78,34 @@ function App() {
             }
             path="orders/:orderId"
           />
+        </Route>
+        <Route
+          element={
+            <PrivateRoute allowedRoles={['SALES_MANAGER', 'PRODUCT_MANAGER']}>
+              <AdminLayout />
+            </PrivateRoute>
+          }
+          path="admin"
+        >
+          <Route element={<AdminPortalPage />} index />
           <Route
             element={
-              <PrivateRoute allowedRoles={['SALES_MANAGER', 'PRODUCT_MANAGER']}>
-                <AdminPortalPage />
+              <PrivateRoute allowedRoles={['PRODUCT_MANAGER']}>
+                <AdminBooksPage />
               </PrivateRoute>
             }
-            path="admin"
+            path="books"
           />
-          <Route element={<Navigate replace to="/" />} path="*" />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['PRODUCT_MANAGER']}>
+                <AdminCategoriesPage />
+              </PrivateRoute>
+            }
+            path="categories"
+          />
         </Route>
+        <Route element={<Navigate replace to="/" />} path="*" />
       </Routes>
     </BrowserRouter>
   )

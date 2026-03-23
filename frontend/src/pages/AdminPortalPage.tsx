@@ -19,18 +19,18 @@ const launchCards = [
     to: '/admin/categories',
   },
   {
-    description: 'Delivery queues, moderation, discounts, and reporting arrive in the next tasks.',
+    description: 'Track each delivery line and advance statuses from processing to completion.',
     icon: Package,
-    label: 'Operations Modules',
-    status: 'Upcoming',
-    to: '/admin',
+    label: 'Delivery Management',
+    status: 'Active now',
+    to: '/admin/deliveries',
   },
 ] as const
 
 const roadmap = [
   { icon: Quotes, label: 'Review moderation', note: 'Pending Phase 7 task' },
-  { icon: Package, label: 'Delivery management', note: 'Pending Phase 7 task' },
   { icon: ChartLine, label: 'Revenue analytics', note: 'Pending Phase 7 task' },
+  { icon: Package, label: 'Delivery dashboards', note: 'More workflow depth arrives next' },
 ] as const
 
 function AdminPortalPage() {

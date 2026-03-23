@@ -32,10 +32,15 @@ const primaryLinks = [
     label: 'Categories',
     to: '/admin/categories',
   },
+  {
+    description: 'Advance orders through the delivery pipeline',
+    icon: Package,
+    label: 'Deliveries',
+    to: '/admin/deliveries',
+  },
 ] as const
 
 const upcomingLinks = [
-  { icon: Package, label: 'Deliveries' },
   { icon: Quotes, label: 'Moderation' },
   { icon: Percent, label: 'Discounts' },
   { icon: ChartLine, label: 'Revenue' },

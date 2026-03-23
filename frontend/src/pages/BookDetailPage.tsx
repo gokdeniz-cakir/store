@@ -10,10 +10,12 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 
 import StarRating from '../components/books/StarRating'
 import WishlistToggleButton from '../components/books/WishlistToggleButton'
-import { getBook } from '../services/bookService'
-import { createReview, getApprovedReviews } from '../services/reviewService'
+import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import { useCart } from '../hooks/useCart'
 import { useAuth } from '../hooks/useAuth'
+import { useToast } from '../hooks/useToast'
+import { getBook } from '../services/bookService'
+import { createReview, getApprovedReviews } from '../services/reviewService'
 import type { Book } from '../types/catalog'
 import type { Review } from '../types/review'
 import { getApiErrorMessage } from '../utils/apiError'
@@ -75,6 +77,7 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
   const location = useLocation()
   const { addItem } = useCart()
   const { isAuthenticated, user } = useAuth()
+  const { showToast } = useToast()
   const [detailState, setDetailState] = useState<DetailState>({
     data: null,
     error: null,
@@ -188,6 +191,11 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
 
     addItem(detailState.data)
     setNotice('Added to cart. Guest selections persist locally until checkout.')
+    showToast({
+      message: `"${detailState.data.title}" is now in your cart.`,
+      title: 'Cart Updated',
+      tone: 'success',
+    })
   }
 
   async function handleReviewSubmit(event: MouseEvent<HTMLButtonElement>) {
@@ -214,8 +222,19 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
       setReviewNotice(
         'Your review has been submitted and is now awaiting editorial approval.',
       )
+      showToast({
+        message: 'Your review is now awaiting editorial moderation.',
+        title: 'Review Submitted',
+        tone: 'success',
+      })
     } catch (error: unknown) {
-      setReviewError(getApiErrorMessage(error, 'Unable to submit your review right now.'))
+      const message = getApiErrorMessage(error, 'Unable to submit your review right now.')
+      setReviewError(message)
+      showToast({
+        message,
+        title: 'Review Error',
+        tone: 'error',
+      })
     } finally {
       setIsSubmittingReview(false)
     }
@@ -228,23 +247,26 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
   if (!hasValidBookId || !detailState.data) {
     return (
       <main className="flex-1 bg-parchment-50 py-20">
-        <div className="mx-auto max-w-3xl border border-parchment-200 bg-white px-8 py-16 text-center">
-          <p className="text-[10px] uppercase tracking-eyebrow text-crimson-700">
-            Edition Unavailable
-          </p>
-          <h1 className="mt-6 font-serif text-4xl text-ink-900">We could not open this book</h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-500">
-            {hasValidBookId
-              ? detailState.error ?? 'The requested edition does not exist in the current catalog.'
-              : 'The selected edition could not be identified.'}
-          </p>
-          <Link
-            className="mt-8 inline-flex items-center gap-2 border border-ink-900 px-6 py-3 text-xs uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
-            to="/books"
-          >
-            <ArrowLeft className="text-sm" />
-            Return To Catalogue
-          </Link>
+        <div className="mx-auto max-w-3xl px-8">
+          <FeedbackPanel
+            actions={
+              <Link
+                className="inline-flex items-center gap-2 border border-ink-900 px-6 py-3 text-xs uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+                to="/books"
+              >
+                <ArrowLeft className="text-sm" />
+                Return To Catalogue
+              </Link>
+            }
+            description={
+              hasValidBookId
+                ? detailState.error ?? 'The requested edition does not exist in the current catalog.'
+                : 'The selected edition could not be identified.'
+            }
+            eyebrow="Edition Unavailable"
+            title="We could not open this book"
+            tone="error"
+          />
         </div>
       </main>
     )

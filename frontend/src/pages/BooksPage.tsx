@@ -10,6 +10,7 @@ import { useEffect, useState, useTransition, type ChangeEvent, type FormEvent } 
 import { Link, useSearchParams } from 'react-router-dom'
 
 import BookCard from '../components/books/BookCard'
+import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import { getBooks } from '../services/bookService'
 import { getCategories } from '../services/categoryService'
 import type { BookPageResponse, CatalogCategory } from '../types/catalog'
@@ -490,37 +491,39 @@ function BooksPage() {
               {booksState.isLoading ? <CatalogSkeleton /> : null}
 
               {!booksState.isLoading && booksState.error ? (
-                <div className="border border-crimson-700/20 bg-white p-10 text-center">
-                  <p className="font-serif text-3xl text-ink-900">Catalog unavailable</p>
-                  <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-500">
-                    {booksState.error}
-                  </p>
-                  <button
-                    className="mt-6 inline-flex items-center gap-2 bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
-                    onClick={() => setReloadKey((currentValue) => currentValue + 1)}
-                    type="button"
-                  >
-                    <ArrowCounterClockwise className="text-sm" />
-                    Retry
-                  </button>
-                </div>
+                <FeedbackPanel
+                  actions={
+                    <button
+                      className="inline-flex items-center gap-2 bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
+                      onClick={() => setReloadKey((currentValue) => currentValue + 1)}
+                      type="button"
+                    >
+                      <ArrowCounterClockwise className="text-sm" />
+                      Retry
+                    </button>
+                  }
+                  description={booksState.error}
+                  eyebrow="Catalog"
+                  title="Catalog unavailable"
+                  tone="error"
+                />
               ) : null}
 
               {!booksState.isLoading && !booksState.error && booksState.data?.content.length === 0 ? (
-                <div className="border border-parchment-200 bg-white px-8 py-16 text-center">
-                  <p className="font-serif text-3xl text-ink-900">No books found</p>
-                  <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-500">
-                    Try clearing the current filters or broadening your search terms to
-                    reveal more of the Aurelia collection.
-                  </p>
-                  <button
-                    className="mt-6 border border-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
-                    onClick={handleClearFilters}
-                    type="button"
-                  >
-                    View Full Catalogue
-                  </button>
-                </div>
+                <FeedbackPanel
+                  actions={
+                    <button
+                      className="border border-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+                      onClick={handleClearFilters}
+                      type="button"
+                    >
+                      View Full Catalogue
+                    </button>
+                  }
+                  description="Try clearing the current filters or broadening your search terms to reveal more of the Aurelia collection."
+                  eyebrow="Catalog"
+                  title="No books found"
+                />
               ) : null}
 
               {!booksState.isLoading && booksState.data?.content.length ? (

@@ -2,6 +2,7 @@ import { ArrowRight, Receipt } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import { getOrders } from '../services/orderService'
 import type { CustomerOrder, OrderPageResponse } from '../types/order'
 import { getApiErrorMessage } from '../utils/apiError'
@@ -85,27 +86,29 @@ function OrderHistoryPage() {
         ) : null}
 
         {!orderHistoryState.isLoading && orderHistoryState.error ? (
-          <div className="border border-crimson-700/20 bg-white px-8 py-12 text-center">
-            <p className="font-serif text-3xl text-ink-900">Order history unavailable</p>
-            <p className="mt-4 text-sm leading-7 text-ink-500">{orderHistoryState.error}</p>
-          </div>
+          <FeedbackPanel
+            description={orderHistoryState.error}
+            eyebrow="Order History"
+            title="Order history unavailable"
+            tone="error"
+          />
         ) : null}
 
         {!orderHistoryState.isLoading && !orderHistoryState.error && orderHistoryState.data?.content.length === 0 ? (
-          <div className="border border-parchment-200 bg-white px-8 py-16 text-center">
-            <Receipt className="mx-auto text-5xl text-ink-500" />
-            <p className="mt-6 font-serif text-3xl text-ink-900">No orders yet</p>
-            <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-500">
-              Complete checkout from the cart to create your first order record.
-            </p>
-            <Link
-              className="mt-8 inline-flex items-center gap-2 bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
-              to="/books"
-            >
-              Browse Catalogue
-              <ArrowRight className="text-sm" />
-            </Link>
-          </div>
+          <FeedbackPanel
+            actions={
+              <Link
+                className="inline-flex items-center gap-2 bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
+                to="/books"
+              >
+                Browse Catalogue
+                <ArrowRight className="text-sm" />
+              </Link>
+            }
+            description="Complete checkout from the cart to create your first order record."
+            icon={<Receipt />}
+            title="No orders yet"
+          />
         ) : null}
 
         {!orderHistoryState.isLoading && orderHistoryState.data?.content.length ? (

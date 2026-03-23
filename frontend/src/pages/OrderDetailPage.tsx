@@ -9,6 +9,8 @@ import {
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 
+import FeedbackPanel from '../components/feedback/FeedbackPanel'
+import { useToast } from '../hooks/useToast'
 import {
   cancelOrder,
   downloadOrderInvoice,
@@ -44,6 +46,7 @@ function OrderDetailPage() {
   const [actionError, setActionError] = useState<string | null>(null)
   const [noticeMessage, setNoticeMessage] = useState<string | null>(null)
   const [activeAction, setActiveAction] = useState<'cancel' | 'refund' | null>(null)
+  const { showToast } = useToast()
 
   useEffect(() => {
     if (!hasValidOrderId) {
@@ -98,23 +101,26 @@ function OrderDetailPage() {
   if (!hasValidOrderId || !orderDetailState.data) {
     return (
       <main className="flex-1 bg-parchment-50 py-20">
-        <div className="mx-auto max-w-3xl border border-parchment-200 bg-white px-8 py-16 text-center">
-          <p className="text-[10px] uppercase tracking-eyebrow text-crimson-700">
-            Order Unavailable
-          </p>
-          <h1 className="mt-6 font-serif text-4xl text-ink-900">We could not open this order</h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-500">
-            {hasValidOrderId
-              ? orderDetailState.error ?? 'The requested order does not exist.'
-              : 'The selected order could not be identified.'}
-          </p>
-          <Link
-            className="mt-8 inline-flex items-center gap-2 border border-ink-900 px-6 py-3 text-xs uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
-            to="/orders"
-          >
-            <ArrowLeft className="text-sm" />
-            Return To Orders
-          </Link>
+        <div className="mx-auto max-w-3xl px-8">
+          <FeedbackPanel
+            actions={
+              <Link
+                className="inline-flex items-center gap-2 border border-ink-900 px-6 py-3 text-xs uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+                to="/orders"
+              >
+                <ArrowLeft className="text-sm" />
+                Return To Orders
+              </Link>
+            }
+            description={
+              hasValidOrderId
+                ? orderDetailState.error ?? 'The requested order does not exist.'
+                : 'The selected order could not be identified.'
+            }
+            eyebrow="Order Unavailable"
+            title="We could not open this order"
+            tone="error"
+          />
         </div>
       </main>
     )
@@ -142,7 +148,13 @@ function OrderDetailPage() {
       anchor.remove()
       window.URL.revokeObjectURL(downloadUrl)
     } catch (error: unknown) {
-      setDownloadError(getApiErrorMessage(error, 'Unable to download the invoice right now.'))
+      const message = getApiErrorMessage(error, 'Unable to download the invoice right now.')
+      setDownloadError(message)
+      showToast({
+        message,
+        title: 'Invoice Error',
+        tone: 'error',
+      })
     } finally {
       setIsDownloading(false)
     }
@@ -160,9 +172,21 @@ function OrderDetailPage() {
         error: null,
         isLoading: false,
       })
-      setNoticeMessage('The order has been cancelled and stock has been restored.')
+      const message = 'The order has been cancelled and stock has been restored.'
+      setNoticeMessage(message)
+      showToast({
+        message,
+        title: 'Order Cancelled',
+        tone: 'success',
+      })
     } catch (error: unknown) {
-      setActionError(getApiErrorMessage(error, 'Unable to cancel this order right now.'))
+      const message = getApiErrorMessage(error, 'Unable to cancel this order right now.')
+      setActionError(message)
+      showToast({
+        message,
+        title: 'Cancellation Error',
+        tone: 'error',
+      })
     } finally {
       setActiveAction(null)
     }
@@ -180,9 +204,21 @@ function OrderDetailPage() {
         error: null,
         isLoading: false,
       })
-      setNoticeMessage('Your refund request has been submitted for manager review.')
+      const message = 'Your refund request has been submitted for manager review.'
+      setNoticeMessage(message)
+      showToast({
+        message,
+        title: 'Refund Requested',
+        tone: 'success',
+      })
     } catch (error: unknown) {
-      setActionError(getApiErrorMessage(error, 'Unable to submit the refund request right now.'))
+      const message = getApiErrorMessage(error, 'Unable to submit the refund request right now.')
+      setActionError(message)
+      showToast({
+        message,
+        title: 'Refund Error',
+        tone: 'error',
+      })
     } finally {
       setActiveAction(null)
     }

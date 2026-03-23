@@ -4,6 +4,7 @@ import { Link, Navigate } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
+import { useToast } from '../hooks/useToast'
 import { placeOrder } from '../services/orderService'
 import { getApiErrorMessage } from '../utils/apiError'
 import { formatCurrency } from '../utils/catalog'
@@ -21,6 +22,7 @@ function CheckoutPage() {
   })
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { showToast } = useToast()
 
   if (!user) {
     return <Navigate replace to="/login" />
@@ -62,10 +64,21 @@ function CheckoutPage() {
         })),
       })
 
+      showToast({
+        message: `Order #${order.id} has been placed and your invoice is ready to download.`,
+        title: 'Order Confirmed',
+        tone: 'success',
+      })
       setCompletedOrderId(order.id)
       clearCart()
     } catch (error: unknown) {
-      setErrorMessage(getApiErrorMessage(error, 'Unable to place the order.'))
+      const message = getApiErrorMessage(error, 'Unable to place the order.')
+      setErrorMessage(message)
+      showToast({
+        message,
+        title: 'Checkout Error',
+        tone: 'error',
+      })
     } finally {
       setIsSubmitting(false)
     }

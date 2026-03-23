@@ -2,13 +2,16 @@ import { ArrowRight, HeartStraightBreak } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import StarRating from '../components/books/StarRating'
+import { useToast } from '../hooks/useToast'
 import { useWishlist } from '../hooks/useWishlist'
 import { formatCurrency, getCoverPresentation, renderCategoryIcon } from '../utils/catalog'
 import { getApiErrorMessage } from '../utils/apiError'
 
 function WishlistPage() {
   const { error, isLoading, removeFromWishlist, wishlistItems } = useWishlist()
+  const { showToast } = useToast()
   const [removingBookId, setRemovingBookId] = useState<number | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
 
@@ -18,8 +21,19 @@ function WishlistPage() {
 
     try {
       await removeFromWishlist(bookId)
+      showToast({
+        message: 'The edition has been removed from your saved library.',
+        title: 'Wishlist Updated',
+        tone: 'success',
+      })
     } catch (removeError: unknown) {
-      setActionError(getApiErrorMessage(removeError, 'Unable to update your wishlist.'))
+      const message = getApiErrorMessage(removeError, 'Unable to update your wishlist.')
+      setActionError(message)
+      showToast({
+        message,
+        title: 'Wishlist Error',
+        tone: 'error',
+      })
     } finally {
       setRemovingBookId(null)
     }
@@ -48,10 +62,12 @@ function WishlistPage() {
         ) : null}
 
         {error && !wishlistItems.length ? (
-          <div className="border border-crimson-700/20 bg-white px-8 py-12 text-center">
-            <p className="font-serif text-3xl text-ink-900">Wishlist unavailable</p>
-            <p className="mt-4 text-sm leading-7 text-ink-500">{error}</p>
-          </div>
+          <FeedbackPanel
+            description={error}
+            eyebrow="Saved Editions"
+            title="Wishlist unavailable"
+            tone="error"
+          />
         ) : null}
 
         {isLoading && !wishlistItems.length ? (
@@ -63,21 +79,20 @@ function WishlistPage() {
         ) : null}
 
         {!isLoading && !error && wishlistItems.length === 0 ? (
-          <div className="border border-parchment-200 bg-white px-8 py-16 text-center">
-            <HeartStraightBreak className="mx-auto text-5xl text-ink-500" />
-            <p className="mt-6 font-serif text-3xl text-ink-900">Your wishlist is empty</p>
-            <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-500">
-              Save books from the catalog to build a short list of editions worth
-              revisiting.
-            </p>
-            <Link
-              className="mt-8 inline-flex items-center gap-2 bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
-              to="/books"
-            >
-              Browse Catalogue
-              <ArrowRight className="text-sm" />
-            </Link>
-          </div>
+          <FeedbackPanel
+            actions={
+              <Link
+                className="inline-flex items-center gap-2 bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
+                to="/books"
+              >
+                Browse Catalogue
+                <ArrowRight className="text-sm" />
+              </Link>
+            }
+            description="Save books from the catalog to build a short list of editions worth revisiting."
+            icon={<HeartStraightBreak />}
+            title="Your wishlist is empty"
+          />
         ) : null}
 
         {!isLoading && wishlistItems.length > 0 ? (

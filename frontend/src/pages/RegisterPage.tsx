@@ -9,6 +9,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
+import { useToast } from '../hooks/useToast'
 import { getApiErrorMessage } from '../utils/apiError'
 
 const collectionPromises = [
@@ -20,6 +21,7 @@ const collectionPromises = [
 function RegisterPage() {
   const navigate = useNavigate()
   const { isAuthenticated, register, user } = useAuth()
+  const { showToast } = useToast()
 
   const [formState, setFormState] = useState({
     name: '',
@@ -49,9 +51,20 @@ function RegisterPage() {
         homeAddress: formState.homeAddress || undefined,
       })
 
+      showToast({
+        message: 'Your customer account is ready and you can start placing orders immediately.',
+        title: 'Account Created',
+        tone: 'success',
+      })
       navigate('/account', { replace: true })
     } catch (error: unknown) {
-      setErrorMessage(getApiErrorMessage(error, 'Unable to create your account.'))
+      const message = getApiErrorMessage(error, 'Unable to create your account.')
+      setErrorMessage(message)
+      showToast({
+        message,
+        title: 'Registration Failed',
+        tone: 'error',
+      })
     } finally {
       setIsSubmitting(false)
     }

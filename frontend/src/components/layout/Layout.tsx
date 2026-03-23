@@ -4,6 +4,7 @@ import {
   FacebookLogo,
   Heart,
   InstagramLogo,
+  List,
   MagnifyingGlass,
   Tote,
   User,
@@ -64,11 +65,17 @@ function Layout() {
   const { itemCount } = useCart()
   const { markAsRead, notifications, unreadCount } = useNotifications()
   const { itemCount: wishlistItemCount } = useWishlist()
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const accountHref = isAuthenticated ? '/account' : '/login'
   const wishlistHref =
     !isAuthenticated ? '/login' : user?.role === 'CUSTOMER' ? '/wishlist' : '/account'
   const recentNotifications = notifications.slice(0, 5)
+
+  function closeTransientPanels() {
+    setIsMobileNavOpen(false)
+    setIsNotificationsOpen(false)
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-parchment-50 text-ink-900">
@@ -79,9 +86,18 @@ function Layout() {
       <header className="sticky top-0 z-50 border-b border-parchment-200 bg-parchment-50/95 backdrop-blur-sm">
         <div className="mx-auto max-w-content px-8 py-6">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center justify-center lg:w-1/3 lg:justify-start">
+            <div className="flex items-center justify-between gap-4 lg:w-1/3 lg:justify-start">
               <button
-                className="flex items-center gap-1 text-xs uppercase tracking-[0.18em] text-ink-500 transition-colors hover:text-ink-900"
+                aria-expanded={isMobileNavOpen}
+                aria-label="Open navigation menu"
+                className="inline-flex items-center justify-center border border-parchment-200 bg-white p-3 text-ink-800 transition-colors hover:border-ink-900 lg:hidden"
+                onClick={() => setIsMobileNavOpen((currentValue) => !currentValue)}
+                type="button"
+              >
+                <List className="text-xl" />
+              </button>
+              <button
+                className="hidden items-center gap-1 text-xs uppercase tracking-[0.18em] text-ink-500 transition-colors hover:text-ink-900 lg:flex"
                 type="button"
               >
                 USD $
@@ -100,10 +116,11 @@ function Layout() {
               </Link>
             </div>
 
-            <div className="flex items-center justify-center gap-6 text-ink-800 lg:w-1/3 lg:justify-end">
+            <div className="flex items-center justify-center gap-4 text-ink-800 sm:gap-6 lg:w-1/3 lg:justify-end">
               <Link
                 aria-label="Search the catalogue"
                 className="transition-colors hover:text-crimson-700"
+                onClick={closeTransientPanels}
                 to="/books"
               >
                 <MagnifyingGlass className="text-2xl" />
@@ -111,6 +128,7 @@ function Layout() {
               <Link
                 aria-label={isAuthenticated ? 'View your account' : 'Sign in or register'}
                 className="transition-colors hover:text-crimson-700"
+                onClick={closeTransientPanels}
                 to={accountHref}
               >
                 <User className="text-2xl" />
@@ -133,7 +151,7 @@ function Layout() {
                   </button>
 
                   {isNotificationsOpen ? (
-                    <div className="absolute right-0 top-12 z-50 w-96 border border-parchment-200 bg-white p-4 shadow-[12px_12px_32px_rgba(28,25,23,0.12)]">
+                    <div className="absolute right-0 top-12 z-50 w-[min(24rem,calc(100vw-2rem))] border border-parchment-200 bg-white p-4 shadow-[12px_12px_32px_rgba(28,25,23,0.12)]">
                       <div className="flex items-center justify-between gap-4 border-b border-parchment-200 pb-3">
                         <div>
                           <p className="text-[10px] uppercase tracking-eyebrow text-crimson-700">
@@ -201,6 +219,7 @@ function Layout() {
               <Link
                 aria-label="View your wishlist"
                 className="relative transition-colors hover:text-crimson-700"
+                onClick={closeTransientPanels}
                 state={
                   !isAuthenticated
                     ? { from: `${location.pathname}${location.search}${location.hash}` }
@@ -218,6 +237,7 @@ function Layout() {
               <Link
                 aria-label="View your cart"
                 className="relative transition-colors hover:text-crimson-700"
+                onClick={closeTransientPanels}
                 to="/cart"
               >
                 <Tote className="text-2xl" />
@@ -228,12 +248,16 @@ function Layout() {
             </div>
           </div>
 
-          <nav className="mt-6 border-t border-parchment-200 pt-5">
+          <nav className="mt-6 hidden border-t border-parchment-200 pt-5 lg:block">
             <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-[12px] font-medium uppercase tracking-nav text-ink-800">
               {primaryNavLinks.map((link) => (
                 <li key={link.label}>
                   {'to' in link ? (
-                    <Link className="nav-link hover:text-crimson-700" to={link.to}>
+                    <Link
+                      className="nav-link hover:text-crimson-700"
+                      onClick={closeTransientPanels}
+                      to={link.to}
+                    >
                       {link.label}
                     </Link>
                   ) : (
@@ -245,32 +269,94 @@ function Layout() {
               ))}
               {user?.role !== 'CUSTOMER' ? (
                 <li>
-                  <Link className="nav-link hover:text-crimson-700" to="/admin">
+                  <Link className="nav-link hover:text-crimson-700" onClick={closeTransientPanels} to="/admin">
                     Admin
                   </Link>
                 </li>
               ) : null}
               {user?.role === 'CUSTOMER' ? (
                 <li>
-                  <Link className="nav-link hover:text-crimson-700" to="/wishlist">
+                  <Link className="nav-link hover:text-crimson-700" onClick={closeTransientPanels} to="/wishlist">
                     Wishlist
                   </Link>
                 </li>
               ) : null}
               {user?.role === 'CUSTOMER' ? (
                 <li>
-                  <Link className="nav-link hover:text-crimson-700" to="/orders">
+                  <Link className="nav-link hover:text-crimson-700" onClick={closeTransientPanels} to="/orders">
                     Orders
                   </Link>
                 </li>
               ) : null}
               <li>
-                <Link className="nav-link hover:text-crimson-700" to={accountHref}>
+                <Link className="nav-link hover:text-crimson-700" onClick={closeTransientPanels} to={accountHref}>
                   {isAuthenticated ? 'Account' : 'Sign In'}
                 </Link>
               </li>
             </ul>
           </nav>
+
+          {isMobileNavOpen ? (
+            <div className="mt-6 border-t border-parchment-200 pt-5 lg:hidden">
+              <div className="grid gap-3 sm:grid-cols-2">
+                {primaryNavLinks.map((link) =>
+                  'to' in link ? (
+                    <Link
+                      className="border border-parchment-200 bg-white px-4 py-3 text-[11px] uppercase tracking-nav text-ink-800 transition-colors hover:border-ink-900 hover:bg-parchment-50"
+                      key={link.label}
+                      onClick={closeTransientPanels}
+                      to={link.to}
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      className="border border-parchment-200 bg-white px-4 py-3 text-[11px] uppercase tracking-nav text-ink-800 transition-colors hover:border-ink-900 hover:bg-parchment-50"
+                      href={link.href}
+                      key={link.label}
+                      onClick={closeTransientPanels}
+                    >
+                      {link.label}
+                    </a>
+                  ),
+                )}
+                {user?.role !== 'CUSTOMER' ? (
+                  <Link
+                    className="border border-parchment-200 bg-white px-4 py-3 text-[11px] uppercase tracking-nav text-ink-800 transition-colors hover:border-ink-900 hover:bg-parchment-50"
+                    onClick={closeTransientPanels}
+                    to="/admin"
+                  >
+                    Admin
+                  </Link>
+                ) : null}
+                {user?.role === 'CUSTOMER' ? (
+                  <Link
+                    className="border border-parchment-200 bg-white px-4 py-3 text-[11px] uppercase tracking-nav text-ink-800 transition-colors hover:border-ink-900 hover:bg-parchment-50"
+                    onClick={closeTransientPanels}
+                    to="/wishlist"
+                  >
+                    Wishlist
+                  </Link>
+                ) : null}
+                {user?.role === 'CUSTOMER' ? (
+                  <Link
+                    className="border border-parchment-200 bg-white px-4 py-3 text-[11px] uppercase tracking-nav text-ink-800 transition-colors hover:border-ink-900 hover:bg-parchment-50"
+                    onClick={closeTransientPanels}
+                    to="/orders"
+                  >
+                    Orders
+                  </Link>
+                ) : null}
+                <Link
+                  className="border border-ink-900 bg-ink-900 px-4 py-3 text-[11px] uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
+                  onClick={closeTransientPanels}
+                  to={accountHref}
+                >
+                  {isAuthenticated ? 'Account' : 'Sign In'}
+                </Link>
+              </div>
+            </div>
+          ) : null}
         </div>
       </header>
 

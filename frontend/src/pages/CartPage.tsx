@@ -2,14 +2,17 @@ import { ArrowRight, ShoppingBagOpen, Trash } from '@phosphor-icons/react'
 import type { ChangeEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
+import FeedbackPanel from '../components/feedback/FeedbackPanel'
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
+import { useToast } from '../hooks/useToast'
 import { formatCurrency, getCoverPresentation, renderCategoryIcon } from '../utils/catalog'
 
 function CartPage() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
   const { cartItems, clearCart, itemCount, removeItem, subtotal, updateQuantity } = useCart()
+  const { showToast } = useToast()
 
   function handleQuantityChange(bookId: number, event: ChangeEvent<HTMLInputElement>) {
     const nextQuantity = Number(event.target.value)
@@ -23,6 +26,11 @@ function CartPage() {
 
   function handleCheckout() {
     if (!isAuthenticated) {
+      showToast({
+        message: 'Sign in to continue from cart to checkout. Your guest selections remain saved locally.',
+        title: 'Authentication Required',
+        tone: 'info',
+      })
       navigate('/login', { state: { from: '/cart' } })
       return
     }
@@ -33,23 +41,22 @@ function CartPage() {
   if (cartItems.length === 0) {
     return (
       <main className="flex-1 bg-parchment-50 py-20">
-        <div className="mx-auto max-w-3xl border border-parchment-200 bg-white px-8 py-16 text-center">
-          <ShoppingBagOpen className="mx-auto text-5xl text-ink-500" />
-          <p className="mt-6 text-[10px] uppercase tracking-eyebrow text-crimson-700">
-            Your Cart Is Empty
-          </p>
-          <h1 className="mt-4 font-serif text-4xl text-ink-900">Nothing on the trolley yet</h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-500">
-            Browse the Aurelia catalogue and add books from the detail page. Guest cart
-            selections persist locally in your browser.
-          </p>
-          <Link
-            className="mt-8 inline-flex items-center gap-2 bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
-            to="/books"
-          >
-            Browse Catalogue
-            <ArrowRight className="text-sm" />
-          </Link>
+        <div className="mx-auto max-w-3xl px-8">
+          <FeedbackPanel
+            actions={
+              <Link
+                className="inline-flex items-center gap-2 bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
+                to="/books"
+              >
+                Browse Catalogue
+                <ArrowRight className="text-sm" />
+              </Link>
+            }
+            description="Browse the Aurelia catalogue and add books from the detail page. Guest cart selections persist locally in your browser."
+            eyebrow="Your Cart Is Empty"
+            icon={<ShoppingBagOpen />}
+            title="Nothing on the trolley yet"
+          />
         </div>
       </main>
     )

@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
+import { useToast } from '../hooks/useToast'
 import type { UserRole } from '../types/auth'
 import { getApiErrorMessage } from '../utils/apiError'
 
@@ -20,6 +21,7 @@ function LoginPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const { isAuthenticated, login, user } = useAuth()
+  const { showToast } = useToast()
 
   const [formState, setFormState] = useState({
     email: '',
@@ -44,9 +46,20 @@ function LoginPage() {
           ? location.state.from
           : getDefaultRedirect(authenticatedUser.role)
 
+      showToast({
+        message: `Signed in as ${authenticatedUser.email}.`,
+        title: 'Welcome Back',
+        tone: 'success',
+      })
       navigate(redirectTarget, { replace: true })
     } catch (error: unknown) {
-      setErrorMessage(getApiErrorMessage(error, 'Unable to sign in at the moment.'))
+      const message = getApiErrorMessage(error, 'Unable to sign in at the moment.')
+      setErrorMessage(message)
+      showToast({
+        message,
+        title: 'Sign In Failed',
+        tone: 'error',
+      })
     } finally {
       setIsSubmitting(false)
     }

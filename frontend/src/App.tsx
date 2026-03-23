@@ -6,6 +6,7 @@ import AccountPage from './pages/AccountPage'
 import BookDetailPage from './pages/BookDetailPage'
 import AdminPortalPage from './pages/AdminPortalPage'
 import BooksPage from './pages/BooksPage'
+import CartPage from './pages/CartPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -15,9 +16,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route element={<HomePage />} index />
+        <Route element={<HomePage />} index />
           <Route element={<BooksPage />} path="books" />
           <Route element={<BookDetailPage />} path="books/:bookId" />
+          <Route element={<CartPage />} path="cart" />
           <Route element={<LoginPage />} path="login" />
           <Route element={<RegisterPage />} path="register" />
           <Route

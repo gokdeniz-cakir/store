@@ -3,6 +3,7 @@ import { useEffect, useState, type MouseEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { getBook } from '../services/bookService'
+import { useCart } from '../hooks/useCart'
 import type { Book } from '../types/catalog'
 import { getApiErrorMessage } from '../utils/apiError'
 import {
@@ -52,6 +53,7 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
     isLoading: true,
   })
   const [notice, setNotice] = useState<string | null>(null)
+  const { addItem } = useCart()
 
   useEffect(() => {
     if (!hasValidBookId) {
@@ -95,7 +97,12 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
 
   function handleAddToCart(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
-    setNotice('Cart management arrives in Phase 4. This button is ready for that flow.')
+    if (!detailState.data) {
+      return
+    }
+
+    addItem(detailState.data)
+    setNotice('Added to cart. Guest selections persist locally until checkout.')
   }
 
   if (detailState.isLoading) {

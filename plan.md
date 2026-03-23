@@ -43,7 +43,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 
 > Goal: Users can manage a cart (guests included), log in, and place orders.
 
-- [ ] **P4-T1** — Frontend: Create `CartContext` (localStorage-backed, add/remove/update/clear/getTotal). Build Cart page — line items with book cover thumbnails, editable quantities, per-item totals, grand total, "Proceed to Checkout" button (redirects to login if unauthenticated).
+- [x] **P4-T1** — Frontend: Create `CartContext` (localStorage-backed, add/remove/update/clear/getTotal). Build Cart page — line items with book cover thumbnails, editable quantities, per-item totals, grand total, "Proceed to Checkout" button (redirects to login if unauthenticated).
 - [ ] **P4-T2** — Create Flyway migration for `orders` (id, customer_id, total_price, status enum [PROCESSING, IN_TRANSIT, DELIVERED, CANCELLED, REFUND_REQUESTED, REFUNDED], shipping_address, timestamps), `order_items` (id, order_id, book_id, quantity, unit_price, discount_applied), and `credit_cards` (id, customer_id, card_number_encrypted, cardholder_name, expiry_month, expiry_year). Create entities. Implement AES encryption utility for card storage.
 - [ ] **P4-T3** — Implement `OrderService.placeOrder()`: validate stock with optimistic locking retry, decrement stock atomically, create order (PROCESSING), save encrypted payment info. Implement `OrderController`: `POST /api/orders`, `GET /api/orders` (customer's own, paginated), `GET /api/orders/{id}`.
 - [ ] **P4-T4** — Frontend: Build Checkout page (shipping address form, credit card form, order summary). Build Order History page (list with status badges). Build Order Detail page (items, prices, status, address).

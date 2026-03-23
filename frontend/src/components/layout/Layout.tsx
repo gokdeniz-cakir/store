@@ -12,6 +12,7 @@ import {
 import { Link, Outlet } from 'react-router-dom'
 
 import { useAuth } from '../../hooks/useAuth'
+import { useCart } from '../../hooks/useCart'
 
 const primaryNavLinks = [
   { href: '/#hero', label: 'Limited Editions' },
@@ -52,11 +53,10 @@ const socialLinks = [
   { href: '/#atelier', icon: YoutubeLogo, label: 'YouTube' },
 ] as const
 
-const cartItemCount = 2
-
 function Layout() {
   const currentYear = new Date().getFullYear()
   const { isAuthenticated, user } = useAuth()
+  const { itemCount } = useCart()
   const accountHref = isAuthenticated ? '/account' : '/login'
 
   return (
@@ -111,16 +111,16 @@ function Layout() {
               >
                 <Heart className="text-2xl" />
               </button>
-              <button
+              <Link
                 aria-label="View your cart"
                 className="relative transition-colors hover:text-crimson-700"
-                type="button"
+                to="/cart"
               >
                 <Tote className="text-2xl" />
                 <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center bg-crimson-700 px-1 text-[9px] font-bold text-white">
-                  {cartItemCount}
+                  {itemCount}
                 </span>
-              </button>
+              </Link>
             </div>
           </div>
 

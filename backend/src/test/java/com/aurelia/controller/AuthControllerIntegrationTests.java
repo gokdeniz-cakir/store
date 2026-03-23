@@ -22,6 +22,7 @@ import com.aurelia.dto.AuthResponseDto;
 import com.aurelia.model.User;
 import com.aurelia.model.UserRole;
 import com.aurelia.repository.UserRepository;
+import com.aurelia.security.AuthRateLimitService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
@@ -42,6 +43,9 @@ class AuthControllerIntegrationTests {
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
+	private AuthRateLimitService authRateLimitService;
+
+	@Autowired
 	private UserRepository userRepository;
 
 	@LocalServerPort
@@ -49,6 +53,7 @@ class AuthControllerIntegrationTests {
 
 	@BeforeEach
 	void setUp() {
+		authRateLimitService.clearAll();
 		userRepository.deleteByEmailIn(TEST_EMAILS);
 	}
 
@@ -158,6 +163,41 @@ class AuthControllerIntegrationTests {
 
 		assertThat(objectMapper.readTree(response.body()).get("message").asText())
 			.isEqualTo("Invalid email or password.");
+	}
+
+	@Test
+	void shouldRateLimitRepeatedAuthenticationAttempts() throws IOException, InterruptedException {
+		for (int attempt = 0; attempt < 5; attempt++) {
+			HttpResponse<String> response = post(
+				"/api/auth/login",
+				"""
+					{
+					  "email": "sales@example.com",
+					  "password": "wrong-password"
+					}
+					"""
+			);
+
+			assertThat(response.statusCode()).isIn(401, 429);
+			if (response.statusCode() == 429) {
+				assertThat(attempt).isEqualTo(4);
+				return;
+			}
+		}
+
+		HttpResponse<String> throttledResponse = post(
+			"/api/auth/login",
+			"""
+				{
+				  "email": "sales@example.com",
+				  "password": "wrong-password"
+				}
+				"""
+		);
+
+		assertThat(throttledResponse.statusCode()).isEqualTo(429);
+		assertThat(objectMapper.readTree(throttledResponse.body()).get("message").asText())
+			.isEqualTo("Too many authentication attempts. Please wait and try again.");
 	}
 
 	private HttpResponse<String> post(String path, String body) throws IOException, InterruptedException {

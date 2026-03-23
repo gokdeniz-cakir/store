@@ -6,6 +6,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,7 @@ public record BookRequestDto(
 
 	@NotBlank(message = "isbn is required")
 	@Size(min = 13, max = 13, message = "isbn must be 13 characters")
+	@Pattern(regexp = "\\d{13}", message = "isbn must contain 13 digits")
 	String isbn,
 
 	@NotBlank(message = "edition is required")
@@ -63,6 +65,7 @@ public record BookRequestDto(
 
 	@NotBlank(message = "coverColor is required")
 	@Size(min = 7, max = 7, message = "coverColor must be a 7-character hex value")
+	@Pattern(regexp = "#[0-9A-Fa-f]{6}", message = "coverColor must be a valid hex color")
 	String coverColor,
 
 	@NotNull(message = "categoryId is required")

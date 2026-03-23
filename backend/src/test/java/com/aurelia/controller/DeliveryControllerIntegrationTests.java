@@ -190,6 +190,35 @@ class DeliveryControllerIntegrationTests {
 		assertThat(response.statusCode()).isEqualTo(403);
 	}
 
+	@Test
+	void shouldRejectInvalidDeliveryStatusPayload() throws IOException, InterruptedException {
+		com.aurelia.model.User customer = createPersistedUser(
+			"delivery-customer@example.com",
+			UserRole.CUSTOMER
+		);
+		Category category = seedCategory("Delivery Validation");
+		Book book = seedBook(category, "9780306400303");
+		OrderItem delivery = createDelivery(customer, book, OrderStatus.PROCESSING);
+		String token = createToken("delivery-manager@example.com", UserRole.PRODUCT_MANAGER);
+
+		HttpResponse<String> response = sendRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/admin/deliveries/" + delivery.getId() + "/status"))
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+				.method("PATCH", HttpRequest.BodyPublishers.ofString("""
+					{
+					  "status": "LOST"
+					}
+					"""))
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(400);
+		assertThat(objectMapper.readTree(response.body()).get("message").asText())
+			.contains("status must be one of PROCESSING, IN_TRANSIT, or DELIVERED");
+	}
+
 	private com.aurelia.model.User createPersistedUser(String email, UserRole role) {
 		return userRepository.saveAndFlush(com.aurelia.model.User.builder()
 			.name("Delivery Test User")

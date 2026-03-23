@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.aurelia.security.AuthRateLimitFilter;
 import com.aurelia.security.JwtAuthenticationFilter;
 
 @Configuration
@@ -32,11 +33,13 @@ import com.aurelia.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
 	private final List<String> allowedOrigins;
+	private final AuthRateLimitFilter authRateLimitFilter;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final UserDetailsService userDetailsService;
 
 	public SecurityConfig(
 		@Value("#{'${app.cors.allowed-origins:http://localhost:5173}'.split(',')}") List<String> allowedOrigins,
+		AuthRateLimitFilter authRateLimitFilter,
 		JwtAuthenticationFilter jwtAuthenticationFilter,
 		UserDetailsService userDetailsService
 	) {
@@ -44,6 +47,7 @@ public class SecurityConfig {
 			.map(String::trim)
 			.filter(origin -> !origin.isBlank())
 			.toList();
+		this.authRateLimitFilter = authRateLimitFilter;
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 		this.userDetailsService = userDetailsService;
 	}
@@ -59,7 +63,8 @@ public class SecurityConfig {
 			.sessionManagement(session ->
 				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authenticationManager(authenticationManager)
-			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterAfter(jwtAuthenticationFilter, AuthRateLimitFilter.class)
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/health").permitAll()

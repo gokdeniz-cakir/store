@@ -258,6 +258,42 @@ class CatalogControllerIntegrationTests {
 		assertThat(bookRepository.findAll()).isEmpty();
 	}
 
+	@Test
+	void shouldRejectInvalidBookPayload() throws IOException, InterruptedException {
+		Category category = categoryRepository.saveAndFlush(Category.builder()
+			.name("Validation")
+			.description("Validation coverage.")
+			.iconName("check-square")
+			.build());
+
+		String token = createToken("catalog-manager@example.com", UserRole.PRODUCT_MANAGER);
+
+		HttpRequest request = HttpRequest.newBuilder()
+			.uri(URI.create("http://localhost:" + port + "/api/books"))
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+			.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+			.POST(HttpRequest.BodyPublishers.ofString("""
+				{
+				  "title": "Invalid Color Atlas",
+				  "author": "Aurelia Validation",
+				  "isbn": "9780441172719",
+				  "edition": "Deluxe Hardcover",
+				  "stockQuantity": 15,
+				  "price": 125.00,
+				  "publisher": "Aurelia Editions",
+				  "coverColor": "not-a-color",
+				  "categoryId": %d
+				}
+				""".formatted(category.getId())))
+			.build();
+
+		HttpResponse<String> response = sendRequest(request);
+
+		assertThat(response.statusCode()).isEqualTo(400);
+		assertThat(objectMapper.readTree(response.body()).get("message").asText())
+			.contains("coverColor must be a valid hex color");
+	}
+
 	private HttpResponse<String> sendRequest(HttpRequest request)
 		throws IOException, InterruptedException {
 		return HttpClient.newHttpClient()

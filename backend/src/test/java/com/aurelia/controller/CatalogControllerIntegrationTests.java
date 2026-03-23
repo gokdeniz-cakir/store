@@ -25,6 +25,9 @@ import com.aurelia.model.Category;
 import com.aurelia.model.UserRole;
 import com.aurelia.repository.BookRepository;
 import com.aurelia.repository.CategoryRepository;
+import com.aurelia.repository.CreditCardRepository;
+import com.aurelia.repository.OrderItemRepository;
+import com.aurelia.repository.OrderRepository;
 import com.aurelia.repository.UserRepository;
 import com.aurelia.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +55,15 @@ class CatalogControllerIntegrationTests {
 	private JwtService jwtService;
 
 	@Autowired
+	private CreditCardRepository creditCardRepository;
+
+	@Autowired
+	private OrderItemRepository orderItemRepository;
+
+	@Autowired
+	private OrderRepository orderRepository;
+
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
@@ -62,6 +74,9 @@ class CatalogControllerIntegrationTests {
 
 	@BeforeEach
 	void setUp() {
+		orderItemRepository.deleteAll();
+		orderRepository.deleteAll();
+		creditCardRepository.deleteAll();
 		bookRepository.deleteAll();
 		categoryRepository.deleteAll();
 		userRepository.deleteByEmailIn(TEST_EMAILS);

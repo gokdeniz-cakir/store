@@ -1,5 +1,7 @@
 package com.aurelia.repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -35,6 +37,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 	@EntityGraph(attributePaths = "category")
 	Optional<Book> findWithCategoryById(Long id);
+
+	@EntityGraph(attributePaths = "category")
+	List<Book> findAllByIdIn(Collection<Long> ids);
 
 	boolean existsByIsbn(String isbn);
 

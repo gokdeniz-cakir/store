@@ -12,6 +12,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
 public class AesEncryptionUtil {
 
 	private static final String AES_ALGORITHM = "AES";
@@ -22,7 +26,7 @@ public class AesEncryptionUtil {
 	private final SecureRandom secureRandom = new SecureRandom();
 	private final SecretKey secretKey;
 
-	public AesEncryptionUtil(String secret) {
+	public AesEncryptionUtil(@Value("${app.encryption.aes-secret:${jwt.secret}}") String secret) {
 		this.secretKey = new SecretKeySpec(deriveKey(secret), AES_ALGORITHM);
 	}
 

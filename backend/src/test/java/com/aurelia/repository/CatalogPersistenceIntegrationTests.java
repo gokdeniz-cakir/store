@@ -11,6 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.aurelia.model.Book;
 import com.aurelia.model.Category;
+import com.aurelia.repository.CreditCardRepository;
+import com.aurelia.repository.OrderItemRepository;
+import com.aurelia.repository.OrderRepository;
 
 @SpringBootTest
 class CatalogPersistenceIntegrationTests {
@@ -21,8 +24,20 @@ class CatalogPersistenceIntegrationTests {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
+	@Autowired
+	private CreditCardRepository creditCardRepository;
+
+	@Autowired
+	private OrderItemRepository orderItemRepository;
+
+	@Autowired
+	private OrderRepository orderRepository;
+
 	@BeforeEach
 	void setUp() {
+		orderItemRepository.deleteAll();
+		orderRepository.deleteAll();
+		creditCardRepository.deleteAll();
 		bookRepository.deleteAll();
 		categoryRepository.deleteAll();
 	}

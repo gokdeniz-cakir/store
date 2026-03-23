@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.aurelia.model.Book;
 import com.aurelia.model.Category;
 import com.aurelia.model.Order;
+import com.aurelia.model.OrderItem;
 import com.aurelia.model.OrderStatus;
 import com.aurelia.model.UserRole;
 import com.aurelia.repository.BookRepository;
@@ -220,6 +221,69 @@ class OrderControllerIntegrationTests {
 		assertThat(response.statusCode()).isEqualTo(403);
 	}
 
+	@Test
+	void shouldAllowCustomerToDownloadOwnInvoice() throws IOException, InterruptedException {
+		com.aurelia.model.User customer = createPersistedUser("order-customer@example.com", UserRole.CUSTOMER);
+		Category category = seedCategory("Invoice Fiction");
+		Book book = seedBook(category, "9780306400202", 4);
+		Order order = createOrderWithItem(customer, book);
+		String token = createToken(customer.getEmail(), UserRole.CUSTOMER);
+
+		HttpResponse<byte[]> response = sendBinaryRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/orders/" + order.getId() + "/invoice"))
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+				.GET()
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(200);
+		assertThat(response.headers().firstValue(HttpHeaders.CONTENT_TYPE)).hasValue(MediaType.APPLICATION_PDF_VALUE);
+		assertThat(response.headers().firstValue(HttpHeaders.CONTENT_DISPOSITION))
+			.hasValue("attachment; filename=\"aurelia-order-" + order.getId() + "-invoice.pdf\"");
+		assertThat(new String(response.body(), 0, 4)).isEqualTo("%PDF");
+	}
+
+	@Test
+	void shouldRejectInvoiceDownloadForOtherCustomer() throws IOException, InterruptedException {
+		com.aurelia.model.User owner = createPersistedUser("order-customer@example.com", UserRole.CUSTOMER);
+		com.aurelia.model.User otherCustomer = createPersistedUser("other-customer@example.com", UserRole.CUSTOMER);
+		Category category = seedCategory("Invoice History");
+		Book book = seedBook(category, "9780306400203", 4);
+		Order order = createOrderWithItem(owner, book);
+		String token = createToken(otherCustomer.getEmail(), UserRole.CUSTOMER);
+
+		HttpResponse<byte[]> response = sendBinaryRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/orders/" + order.getId() + "/invoice"))
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+				.GET()
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(404);
+	}
+
+	@Test
+	void shouldAllowSalesManagerToDownloadCustomerInvoice() throws IOException, InterruptedException {
+		com.aurelia.model.User customer = createPersistedUser("order-customer@example.com", UserRole.CUSTOMER);
+		Category category = seedCategory("Invoice Management");
+		Book book = seedBook(category, "9780306400204", 4);
+		Order order = createOrderWithItem(customer, book);
+		String token = createToken("order-manager@example.com", UserRole.SALES_MANAGER);
+
+		HttpResponse<byte[]> response = sendBinaryRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/orders/" + order.getId() + "/invoice"))
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+				.GET()
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(200);
+		assertThat(new String(response.body(), 0, 4)).isEqualTo("%PDF");
+	}
+
 	private com.aurelia.model.User createPersistedUser(String email, UserRole role) {
 		return userRepository.saveAndFlush(com.aurelia.model.User.builder()
 			.name("Order Test User")
@@ -268,9 +332,34 @@ class OrderControllerIntegrationTests {
 			.build());
 	}
 
+	private Order createOrderWithItem(com.aurelia.model.User customer, Book book) {
+		Order order = orderRepository.saveAndFlush(Order.builder()
+			.customer(customer)
+			.totalPrice(book.getPrice())
+			.status(OrderStatus.PROCESSING)
+			.shippingAddress("12 Aurelia Lane")
+			.build());
+
+		orderItemRepository.saveAndFlush(OrderItem.builder()
+			.order(order)
+			.book(book)
+			.quantity(1)
+			.unitPrice(book.getPrice())
+			.discountApplied(BigDecimal.ZERO)
+			.build());
+
+		return orderRepository.findById(order.getId()).orElseThrow();
+	}
+
 	private HttpResponse<String> sendRequest(HttpRequest request)
 		throws IOException, InterruptedException {
 		return HttpClient.newHttpClient()
 			.send(request, HttpResponse.BodyHandlers.ofString());
+	}
+
+	private HttpResponse<byte[]> sendBinaryRequest(HttpRequest request)
+		throws IOException, InterruptedException {
+		return HttpClient.newHttpClient()
+			.send(request, HttpResponse.BodyHandlers.ofByteArray());
 	}
 }

@@ -11,9 +11,12 @@ import com.aurelia.model.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-	@EntityGraph(attributePaths = {"items", "items.book", "items.book.category"})
+	@EntityGraph(attributePaths = {"customer", "items", "items.book", "items.book.category"})
 	Page<Order> findByCustomerId(Long customerId, Pageable pageable);
 
-	@EntityGraph(attributePaths = {"items", "items.book", "items.book.category"})
+	@EntityGraph(attributePaths = {"customer", "items", "items.book", "items.book.category"})
 	Optional<Order> findByIdAndCustomerId(Long id, Long customerId);
+
+	@EntityGraph(attributePaths = {"customer", "items", "items.book", "items.book.category"})
+	Optional<Order> findById(Long id);
 }

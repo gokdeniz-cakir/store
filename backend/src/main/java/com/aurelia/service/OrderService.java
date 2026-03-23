@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -43,6 +45,8 @@ public class OrderService {
 	private final AesEncryptionUtil aesEncryptionUtil;
 	private final BookRepository bookRepository;
 	private final CreditCardRepository creditCardRepository;
+	private final EmailService emailService;
+	private final InvoiceService invoiceService;
 	private final OrderRepository orderRepository;
 	private final TransactionTemplate transactionTemplate;
 	private final UserRepository userRepository;
@@ -51,6 +55,8 @@ public class OrderService {
 		AesEncryptionUtil aesEncryptionUtil,
 		BookRepository bookRepository,
 		CreditCardRepository creditCardRepository,
+		EmailService emailService,
+		InvoiceService invoiceService,
 		OrderRepository orderRepository,
 		PlatformTransactionManager transactionManager,
 		UserRepository userRepository
@@ -58,6 +64,8 @@ public class OrderService {
 		this.aesEncryptionUtil = aesEncryptionUtil;
 		this.bookRepository = bookRepository;
 		this.creditCardRepository = creditCardRepository;
+		this.emailService = emailService;
+		this.invoiceService = invoiceService;
 		this.orderRepository = orderRepository;
 		this.userRepository = userRepository;
 		this.transactionTemplate = new TransactionTemplate(transactionManager);
@@ -98,6 +106,22 @@ public class OrderService {
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found."));
 
 		return mapOrder(order);
+	}
+
+	@Transactional
+	public byte[] getInvoice(String requesterEmail, Long orderId, boolean salesManager) {
+		Order order;
+
+		if (salesManager) {
+			order = orderRepository.findById(orderId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found."));
+		} else {
+			User customer = findCustomer(requesterEmail);
+			order = orderRepository.findByIdAndCustomerId(orderId, customer.getId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found."));
+		}
+
+		return invoiceService.generateInvoicePdf(order);
 	}
 
 	private OrderResponseDto placeOrderInTransaction(String customerEmail, PlaceOrderRequestDto request) {
@@ -153,7 +177,23 @@ public class OrderService {
 			.expiryYear(request.creditCard().expiryYear())
 			.build());
 
+		registerInvoiceEmailAfterCommit(savedOrder.getId());
+
 		return mapOrder(savedOrder);
+	}
+
+	private void registerInvoiceEmailAfterCommit(Long orderId) {
+		if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+			emailService.sendOrderInvoiceEmail(orderId);
+			return;
+		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				emailService.sendOrderInvoiceEmail(orderId);
+			}
+		});
 	}
 
 	private BigDecimal calculateDiscount(Book book) {

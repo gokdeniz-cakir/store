@@ -55,7 +55,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 > Goal: On order success, generate a PDF invoice and email it.
 
 - [x] **P5-T1** — Add OpenPDF dependency. Implement `InvoiceService.generateInvoicePdf(Order)` returning byte array. Invoice: order ID, date, customer info, itemized books (title, author, qty, unit price, discount, subtotal), total.
-- [ ] **P5-T2** — Implement `GET /api/orders/{id}/invoice` (owner or SALES_MANAGER, returns PDF). Configure `JavaMailSender` (Mailtrap for dev). Implement `EmailService`. Integrate into order flow: generate + email async (`@Async`).
+- [x] **P5-T2** — Implement `GET /api/orders/{id}/invoice` (owner or SALES_MANAGER, returns PDF). Configure `JavaMailSender` (Mailtrap for dev). Implement `EmailService`. Integrate into order flow: generate + email async (`@Async`).
 - [ ] **P5-T3** — Frontend: Order confirmation page after checkout with "Download Invoice" button.
 
 ---

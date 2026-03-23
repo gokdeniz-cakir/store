@@ -45,6 +45,16 @@ export async function getOrder(orderId: number) {
   return response.data
 }
 
+export async function cancelOrder(orderId: number) {
+  const response = await api.patch<CustomerOrder>(`/orders/${orderId}/cancel`)
+  return response.data
+}
+
+export async function requestRefund(orderId: number) {
+  const response = await api.post<CustomerOrder>(`/orders/${orderId}/refund`)
+  return response.data
+}
+
 export async function downloadOrderInvoice(orderId: number) {
   const response = await api.get<Blob>(`/orders/${orderId}/invoice`, {
     responseType: 'blob',

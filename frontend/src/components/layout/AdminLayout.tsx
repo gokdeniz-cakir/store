@@ -6,6 +6,7 @@ import {
   Percent,
   Quotes,
   Receipt,
+  ReceiptX,
   Rows,
   SignOut,
   SquaresFour,
@@ -39,12 +40,6 @@ const productManagerLinks = [
     icon: Package,
     label: 'Deliveries',
     to: '/admin/deliveries',
-  },
-  {
-    description: 'Apply percentage discounts to selected editions',
-    icon: Percent,
-    label: 'Discounts',
-    to: '/admin/discounts',
   },
   {
     description: 'Inline stock adjustments for live catalog quantities',
@@ -84,6 +79,12 @@ const salesManagerLinks = [
     icon: ChartLine,
     label: 'Revenue',
     to: '/admin/revenue',
+  },
+  {
+    description: 'Approve or reject pending refund requests',
+    icon: ReceiptX,
+    label: 'Refunds',
+    to: '/admin/refunds',
   },
 ] as const
 

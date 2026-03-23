@@ -8,6 +8,7 @@ import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import AdminDeliveriesPage from './pages/AdminDeliveriesPage'
 import AdminDiscountsPage from './pages/AdminDiscountsPage'
 import AdminInvoicesPage from './pages/AdminInvoicesPage'
+import AdminRefundsPage from './pages/AdminRefundsPage'
 import AdminReviewsPage from './pages/AdminReviewsPage'
 import AdminRevenuePage from './pages/AdminRevenuePage'
 import AdminStockPage from './pages/AdminStockPage'
@@ -141,6 +142,14 @@ function App() {
               </PrivateRoute>
             }
             path="revenue"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['SALES_MANAGER']}>
+                <AdminRefundsPage />
+              </PrivateRoute>
+            }
+            path="refunds"
           />
           <Route
             element={

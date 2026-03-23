@@ -134,6 +134,11 @@ function OrderHistoryPage() {
                   <p className="mt-4 text-sm text-ink-800">
                     {order.items.length} line item{order.items.length === 1 ? '' : 's'}
                   </p>
+                  {order.status === 'REFUND_REQUESTED' ? (
+                    <p className="mt-3 text-sm text-crimson-800">
+                      Refund request submitted for {formatCurrency(order.refundAmount)}.
+                    </p>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-col justify-between gap-6 border-l border-parchment-200 pl-6">

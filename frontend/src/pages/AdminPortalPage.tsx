@@ -6,6 +6,7 @@ import {
   Percent,
   Quotes,
   Receipt,
+  ReceiptX,
   Rows,
   Tag,
 } from '@phosphor-icons/react'
@@ -73,6 +74,13 @@ const salesManagerCards = [
     status: 'Active now',
     to: '/admin/revenue',
   },
+  {
+    description: 'Resolve pending customer refund requests with full order detail context.',
+    icon: ReceiptX,
+    label: 'Refund Management',
+    status: 'Active now',
+    to: '/admin/refunds',
+  },
 ] as const
 
 const productManagerRoadmap = [
@@ -86,7 +94,7 @@ const salesManagerRoadmap = [
   { icon: Percent, label: 'Campaign tooling', note: 'Discounts and notifications are active' },
   { icon: Receipt, label: 'Invoice exports', note: 'Range query and PDF retrieval are live' },
   { icon: ChartLine, label: 'Revenue analytics', note: 'Daily charting and summary cards are active' },
-  { icon: Package, label: 'Order ledger', note: 'Invoices map directly back to live orders' },
+  { icon: ReceiptX, label: 'Refund operations', note: 'Pending requests can now be resolved live' },
 ] as const
 
 function AdminPortalPage() {

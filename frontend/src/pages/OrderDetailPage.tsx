@@ -1,8 +1,20 @@
-import { ArrowLeft, DownloadSimple, Package, Receipt } from '@phosphor-icons/react'
+import {
+  ArrowCounterClockwise,
+  ArrowLeft,
+  DownloadSimple,
+  Package,
+  Receipt,
+  XCircle,
+} from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 
-import { downloadOrderInvoice, getOrder } from '../services/orderService'
+import {
+  cancelOrder,
+  downloadOrderInvoice,
+  getOrder,
+  requestRefund,
+} from '../services/orderService'
 import type { CustomerOrder } from '../types/order'
 import { getApiErrorMessage } from '../utils/apiError'
 import { formatCurrency } from '../utils/catalog'
@@ -29,6 +41,9 @@ function OrderDetailPage() {
   })
   const [downloadError, setDownloadError] = useState<string | null>(null)
   const [isDownloading, setIsDownloading] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [noticeMessage, setNoticeMessage] = useState<string | null>(null)
+  const [activeAction, setActiveAction] = useState<'cancel' | 'refund' | null>(null)
 
   useEffect(() => {
     if (!hasValidOrderId) {
@@ -133,6 +148,46 @@ function OrderDetailPage() {
     }
   }
 
+  async function handleCancelOrder() {
+    setActionError(null)
+    setNoticeMessage(null)
+    setActiveAction('cancel')
+
+    try {
+      const updatedOrder = await cancelOrder(order.id)
+      setOrderDetailState({
+        data: updatedOrder,
+        error: null,
+        isLoading: false,
+      })
+      setNoticeMessage('The order has been cancelled and stock has been restored.')
+    } catch (error: unknown) {
+      setActionError(getApiErrorMessage(error, 'Unable to cancel this order right now.'))
+    } finally {
+      setActiveAction(null)
+    }
+  }
+
+  async function handleRefundRequest() {
+    setActionError(null)
+    setNoticeMessage(null)
+    setActiveAction('refund')
+
+    try {
+      const updatedOrder = await requestRefund(order.id)
+      setOrderDetailState({
+        data: updatedOrder,
+        error: null,
+        isLoading: false,
+      })
+      setNoticeMessage('Your refund request has been submitted for manager review.')
+    } catch (error: unknown) {
+      setActionError(getApiErrorMessage(error, 'Unable to submit the refund request right now.'))
+    } finally {
+      setActiveAction(null)
+    }
+  }
+
   return (
     <main className="flex-1 bg-parchment-50 py-16 md:py-20">
       <div className="mx-auto max-w-content px-8">
@@ -147,6 +202,18 @@ function OrderDetailPage() {
         {notice ? (
           <div className="mt-6 border border-gold-500/30 bg-gold-500/10 px-4 py-3 text-sm text-ink-800">
             {notice}
+          </div>
+        ) : null}
+
+        {noticeMessage ? (
+          <div className="mt-6 border border-gold-500/30 bg-gold-500/10 px-4 py-3 text-sm text-ink-800">
+            {noticeMessage}
+          </div>
+        ) : null}
+
+        {actionError ? (
+          <div className="mt-6 border border-crimson-700/20 bg-crimson-700/5 px-4 py-3 text-sm text-crimson-800">
+            {actionError}
           </div>
         ) : null}
 
@@ -210,9 +277,19 @@ function OrderDetailPage() {
                   <dd>{order.status.replaceAll('_', ' ')}</dd>
                 </div>
                 <div className="flex items-center justify-between border-b border-parchment-200 pb-4">
+                  <dt>Refund Amount</dt>
+                  <dd>{formatCurrency(order.refundAmount)}</dd>
+                </div>
+                <div className="flex items-center justify-between border-b border-parchment-200 pb-4">
                   <dt>Items</dt>
                   <dd>{order.items.length}</dd>
                 </div>
+                {order.deliveredAt ? (
+                  <div className="flex items-center justify-between border-b border-parchment-200 pb-4">
+                    <dt>Delivered</dt>
+                    <dd>{formatOrderDate(order.deliveredAt)}</dd>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between font-serif text-2xl text-ink-900">
                   <dt>Total</dt>
                   <dd>{formatCurrency(order.totalPrice)}</dd>
@@ -233,6 +310,30 @@ function OrderDetailPage() {
                 <div className="mt-4 border border-crimson-700/20 bg-crimson-700/5 px-4 py-3 text-sm text-crimson-800">
                   {downloadError}
                 </div>
+              ) : null}
+
+              {order.canCancel ? (
+                <button
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 border border-ink-900 px-5 py-3 text-xs uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white disabled:cursor-not-allowed disabled:border-parchment-200 disabled:text-ink-500"
+                  disabled={activeAction !== null}
+                  onClick={handleCancelOrder}
+                  type="button"
+                >
+                  <XCircle className="text-sm" />
+                  {activeAction === 'cancel' ? 'Cancelling...' : 'Cancel Order'}
+                </button>
+              ) : null}
+
+              {order.canRequestRefund ? (
+                <button
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 border border-ink-900 px-5 py-3 text-xs uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white disabled:cursor-not-allowed disabled:border-parchment-200 disabled:text-ink-500"
+                  disabled={activeAction !== null}
+                  onClick={handleRefundRequest}
+                  type="button"
+                >
+                  <ArrowCounterClockwise className="text-sm" />
+                  {activeAction === 'refund' ? 'Submitting...' : 'Request Refund'}
+                </button>
               ) : null}
             </article>
           </aside>

@@ -12,10 +12,15 @@ export interface OrderItem {
 export interface CustomerOrder {
   id: number
   totalPrice: number
+  refundAmount: number
   status: string
   shippingAddress: string
   items: OrderItem[]
+  canCancel: boolean
+  canRequestRefund: boolean
   createdAt: string
+  deliveredAt: string | null
+  refundRequestedAt: string | null
   updatedAt: string
 }
 

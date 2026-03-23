@@ -1,6 +1,6 @@
 import { CreditCard, LockKey, MapPinLine, Receipt } from '@phosphor-icons/react'
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
@@ -9,9 +9,9 @@ import { getApiErrorMessage } from '../utils/apiError'
 import { formatCurrency } from '../utils/catalog'
 
 function CheckoutPage() {
-  const navigate = useNavigate()
   const { user } = useAuth()
   const { cartItems, clearCart, itemCount, subtotal } = useCart()
+  const [completedOrderId, setCompletedOrderId] = useState<number | null>(null)
   const [formState, setFormState] = useState({
     shippingAddress: '',
     cardNumber: '',
@@ -24,6 +24,10 @@ function CheckoutPage() {
 
   if (!user) {
     return <Navigate replace to="/login" />
+  }
+
+  if (completedOrderId !== null) {
+    return <Navigate replace to={`/orders/${completedOrderId}/confirmation`} />
   }
 
   if (cartItems.length === 0) {
@@ -58,10 +62,8 @@ function CheckoutPage() {
         })),
       })
 
+      setCompletedOrderId(order.id)
       clearCart()
-      navigate(`/orders/${order.id}/confirmation`, {
-        replace: true,
-      })
     } catch (error: unknown) {
       setErrorMessage(getApiErrorMessage(error, 'Unable to place the order.'))
     } finally {

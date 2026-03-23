@@ -1,6 +1,7 @@
 import { WarningCircle } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
+import StarRating from './StarRating'
 import type { Book } from '../../types/catalog'
 import {
   formatCurrency,
@@ -57,6 +58,12 @@ function BookCard({ book }: BookCardProps) {
               {book.title}
             </h4>
             <p className="mt-2 text-sm text-ink-500">{book.author}</p>
+            <StarRating
+              className="mt-4"
+              iconClassName="text-sm"
+              reviewCount={book.reviewCount}
+              value={book.averageRating}
+            />
           </div>
 
           <span

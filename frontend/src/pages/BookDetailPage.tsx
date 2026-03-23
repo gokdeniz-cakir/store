@@ -1,10 +1,20 @@
-import { ArrowLeft, CheckCircle, ShoppingBagOpen, WarningCircle } from '@phosphor-icons/react'
+import {
+  ArrowLeft,
+  CheckCircle,
+  ShoppingBagOpen,
+  Star,
+  WarningCircle,
+} from '@phosphor-icons/react'
 import { useEffect, useState, type MouseEvent } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 
+import StarRating from '../components/books/StarRating'
 import { getBook } from '../services/bookService'
+import { createReview, getApprovedReviews } from '../services/reviewService'
 import { useCart } from '../hooks/useCart'
+import { useAuth } from '../hooks/useAuth'
 import type { Book } from '../types/catalog'
+import type { Review } from '../types/review'
 import { getApiErrorMessage } from '../utils/apiError'
 import {
   formatCurrency,
@@ -17,6 +27,20 @@ interface DetailState {
   data: Book | null
   error: string | null
   isLoading: boolean
+}
+
+interface ReviewState {
+  data: Review[]
+  error: string | null
+  isLoading: boolean
+}
+
+function formatReviewDate(value: string) {
+  return new Date(value).toLocaleDateString(undefined, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
 }
 
 function BookDetailSkeleton() {
@@ -47,13 +71,27 @@ interface BookDetailPageInnerProps {
 function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
   const parsedBookId = Number(bookId)
   const hasValidBookId = Number.isInteger(parsedBookId) && parsedBookId > 0
+  const location = useLocation()
+  const { addItem } = useCart()
+  const { isAuthenticated, user } = useAuth()
   const [detailState, setDetailState] = useState<DetailState>({
     data: null,
     error: null,
     isLoading: true,
   })
+  const [reviewState, setReviewState] = useState<ReviewState>({
+    data: [],
+    error: null,
+    isLoading: true,
+  })
   const [notice, setNotice] = useState<string | null>(null)
-  const { addItem } = useCart()
+  const [reviewFormState, setReviewFormState] = useState({
+    rating: 5,
+    comment: '',
+  })
+  const [reviewNotice, setReviewNotice] = useState<string | null>(null)
+  const [reviewError, setReviewError] = useState<string | null>(null)
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false)
 
   useEffect(() => {
     if (!hasValidBookId) {
@@ -95,6 +133,52 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
     }
   }, [bookId, hasValidBookId, parsedBookId])
 
+  useEffect(() => {
+    if (!hasValidBookId) {
+      return
+    }
+
+    let isActive = true
+
+    async function loadReviews() {
+      try {
+        const reviews = await getApprovedReviews(parsedBookId)
+
+        if (!isActive) {
+          return
+        }
+
+        setReviewState({
+          data: reviews,
+          error: null,
+          isLoading: false,
+        })
+      } catch (error: unknown) {
+        if (!isActive) {
+          return
+        }
+
+        setReviewState({
+          data: [],
+          error: getApiErrorMessage(error, 'Unable to load reader reviews right now.'),
+          isLoading: false,
+        })
+      }
+    }
+
+    setReviewState((currentState) => ({
+      ...currentState,
+      error: null,
+      isLoading: true,
+    }))
+
+    void loadReviews()
+
+    return () => {
+      isActive = false
+    }
+  }, [bookId, hasValidBookId, parsedBookId])
+
   function handleAddToCart(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
     if (!detailState.data) {
@@ -103,6 +187,37 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
 
     addItem(detailState.data)
     setNotice('Added to cart. Guest selections persist locally until checkout.')
+  }
+
+  async function handleReviewSubmit(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault()
+
+    if (!detailState.data) {
+      return
+    }
+
+    setReviewError(null)
+    setReviewNotice(null)
+    setIsSubmittingReview(true)
+
+    try {
+      await createReview(detailState.data.id, {
+        rating: reviewFormState.rating,
+        comment: reviewFormState.comment.trim() || undefined,
+      })
+
+      setReviewFormState({
+        rating: 5,
+        comment: '',
+      })
+      setReviewNotice(
+        'Your review has been submitted and is now awaiting editorial approval.',
+      )
+    } catch (error: unknown) {
+      setReviewError(getApiErrorMessage(error, 'Unable to submit your review right now.'))
+    } finally {
+      setIsSubmittingReview(false)
+    }
   }
 
   if (detailState.isLoading) {
@@ -189,6 +304,12 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
               {book.title}
             </h2>
             <p className="mt-4 text-lg text-ink-500">{book.author}</p>
+            <StarRating
+              className="mt-5"
+              iconClassName="text-lg"
+              reviewCount={book.reviewCount}
+              value={book.averageRating}
+            />
 
             <div className="mt-8 flex flex-wrap items-end gap-4">
               <span className="font-serif text-4xl text-ink-900">{formatCurrency(book.price)}</span>
@@ -310,6 +431,193 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
                 <span className="text-right">{book.category.name}</span>
               </li>
             </ul>
+          </article>
+        </div>
+      </section>
+
+      <section className="bg-parchment-50 py-16">
+        <div className="mx-auto grid max-w-content gap-10 px-8 lg:grid-cols-[0.92fr_1.08fr]">
+          <article className="border border-parchment-200 bg-white p-8">
+            <span className="text-[10px] uppercase tracking-eyebrow text-crimson-700">
+              Reader Notes
+            </span>
+            <h3 className="mt-5 font-serif text-3xl text-ink-900">Review this edition</h3>
+            <p className="mt-4 text-sm leading-7 text-ink-500">
+              Ratings are published after moderation by the Aurelia editorial team.
+            </p>
+
+            <div className="mt-8 border border-parchment-200 bg-parchment-50 p-5">
+              <p className="text-[10px] uppercase tracking-nav text-ink-500">Current Reception</p>
+              <StarRating
+                className="mt-4"
+                iconClassName="text-lg"
+                reviewCount={book.reviewCount}
+                value={book.averageRating}
+              />
+            </div>
+
+            {isAuthenticated && user?.role === 'CUSTOMER' ? (
+              <form className="mt-8 space-y-6">
+                <div>
+                  <span className="mb-3 block text-[10px] uppercase tracking-nav text-ink-500">
+                    Your Rating
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from({ length: 5 }).map((_, index) => {
+                      const ratingValue = index + 1
+                      const isSelected = reviewFormState.rating >= ratingValue
+
+                      return (
+                        <button
+                          className={`border px-3 py-3 transition-colors ${
+                            isSelected
+                              ? 'border-gold-500 bg-gold-500/10 text-gold-600'
+                              : 'border-parchment-200 bg-white text-ink-500 hover:border-ink-900'
+                          }`}
+                          key={ratingValue}
+                          onClick={() =>
+                            setReviewFormState((currentState) => ({
+                              ...currentState,
+                              rating: ratingValue,
+                            }))
+                          }
+                          type="button"
+                        >
+                          <Star className="text-xl" weight={isSelected ? 'fill' : 'regular'} />
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <label className="block">
+                  <span className="mb-3 block text-[10px] uppercase tracking-nav text-ink-500">
+                    Commentary
+                  </span>
+                  <textarea
+                    className="min-h-44 w-full resize-none border border-parchment-200 bg-parchment-50 px-4 py-3 text-sm leading-7 text-ink-900 outline-none transition-colors focus:border-ink-900"
+                    maxLength={5000}
+                    onChange={(event) =>
+                      setReviewFormState((currentState) => ({
+                        ...currentState,
+                        comment: event.target.value,
+                      }))
+                    }
+                    placeholder="Describe the edition, production quality, translation, or reading experience."
+                    value={reviewFormState.comment}
+                  />
+                </label>
+
+                {reviewError ? (
+                  <div className="border border-crimson-700/20 bg-crimson-700/5 px-4 py-3 text-sm text-crimson-800">
+                    {reviewError}
+                  </div>
+                ) : null}
+
+                {reviewNotice ? (
+                  <div className="border border-gold-500/30 bg-gold-500/10 px-4 py-3 text-sm text-ink-800">
+                    {reviewNotice}
+                  </div>
+                ) : null}
+
+                <button
+                  className="bg-ink-900 px-6 py-3 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700 disabled:cursor-not-allowed disabled:bg-ink-500"
+                  disabled={isSubmittingReview}
+                  onClick={handleReviewSubmit}
+                  type="button"
+                >
+                  {isSubmittingReview ? 'Submitting Review...' : 'Submit Review'}
+                </button>
+              </form>
+            ) : (
+              <div className="mt-8 border border-parchment-200 bg-parchment-50 p-5">
+                <p className="text-sm leading-7 text-ink-500">
+                  {isAuthenticated
+                    ? 'Only customer accounts can leave reviews for catalog editions.'
+                    : 'Sign in with a customer account to submit a review for this edition.'}
+                </p>
+                {!isAuthenticated ? (
+                  <Link
+                    className="mt-5 inline-flex items-center gap-2 border border-ink-900 px-5 py-3 text-xs uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+                    state={{ from: `${location.pathname}${location.search}${location.hash}` }}
+                    to="/login"
+                  >
+                    Sign In To Review
+                  </Link>
+                ) : null}
+              </div>
+            )}
+          </article>
+
+          <article className="border border-parchment-200 bg-white p-8">
+            <span className="text-[10px] uppercase tracking-eyebrow text-crimson-700">
+              Approved Reviews
+            </span>
+            <h3 className="mt-5 font-serif text-3xl text-ink-900">From Aurelia readers</h3>
+            <p className="mt-4 text-sm leading-7 text-ink-500">
+              Published reviews are visible after moderation and contribute to the live
+              popularity ranking in the catalog.
+            </p>
+
+            {reviewState.isLoading ? (
+              <div className="mt-8 space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div className="border border-parchment-200 bg-parchment-50 p-5" key={index}>
+                    <div className="h-4 w-40 animate-pulse bg-parchment-200" />
+                    <div className="mt-4 h-3 w-full animate-pulse bg-parchment-100" />
+                    <div className="mt-3 h-3 w-10/12 animate-pulse bg-parchment-100" />
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            {!reviewState.isLoading && reviewState.error ? (
+              <div className="mt-8 border border-crimson-700/20 bg-crimson-700/5 px-4 py-3 text-sm text-crimson-800">
+                {reviewState.error}
+              </div>
+            ) : null}
+
+            {!reviewState.isLoading &&
+            !reviewState.error &&
+            reviewState.data.length === 0 ? (
+              <div className="mt-8 border border-parchment-200 bg-parchment-50 px-6 py-10 text-center">
+                <p className="font-serif text-3xl text-ink-900">No approved reviews yet</p>
+                <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ink-500">
+                  This edition is still waiting for the first moderated reader note.
+                </p>
+              </div>
+            ) : null}
+
+            {!reviewState.isLoading && reviewState.data.length > 0 ? (
+              <div className="mt-8 space-y-5">
+                {reviewState.data.map((review) => (
+                  <article
+                    className="border border-parchment-200 bg-parchment-50 p-5"
+                    key={review.id}
+                  >
+                    <div className="flex flex-col gap-3 border-b border-parchment-200 pb-4 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <p className="font-serif text-2xl text-ink-900">
+                          {review.customerName ?? 'Aurelia reader'}
+                        </p>
+                        <p className="mt-1 text-[11px] uppercase tracking-nav text-ink-500">
+                          {formatReviewDate(review.createdAt)}
+                        </p>
+                      </div>
+                      <StarRating
+                        iconClassName="text-base"
+                        showText={false}
+                        value={review.rating}
+                      />
+                    </div>
+
+                    <p className="mt-5 text-sm leading-7 text-ink-800">
+                      {review.comment?.trim() || 'This reader left a star rating without a written note.'}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            ) : null}
           </article>
         </div>
       </section>

@@ -23,6 +23,8 @@ export interface Book {
   coverImageUrl: string | null
   coverColor: string
   category: CatalogCategory
+  averageRating: number
+  reviewCount: number
   createdAt: string
   updatedAt: string
   version: number

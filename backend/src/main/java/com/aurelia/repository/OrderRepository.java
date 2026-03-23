@@ -20,6 +20,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	);
 
 	@EntityGraph(attributePaths = {"customer", "items", "items.book", "items.book.category"})
+	List<Order> findAllByStatusOrderByRefundRequestedAtDescIdDesc(com.aurelia.model.OrderStatus status);
+
+	@EntityGraph(attributePaths = {"customer", "items", "items.book", "items.book.category"})
 	Page<Order> findByCustomerId(Long customerId, Pageable pageable);
 
 	@EntityGraph(attributePaths = {"customer", "items", "items.book", "items.book.category"})

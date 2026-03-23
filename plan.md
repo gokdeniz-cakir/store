@@ -99,7 +99,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 - [x] **P8-T3** — Frontend: Add "Cancel Order" button on Order Detail (visible when PROCESSING). Add "Request Refund" button (visible when DELIVERED and within 30 days). Build refund management page for SALES_MANAGER (pending requests, approve/reject, order details, refund amount).
 - [x] **P8-T4** — Security hardening: audit all endpoints for role checks, verify encryption, add rate limiting to auth endpoints, review input validation.
 - [x] **P8-T5** — UI polish: consistent loading skeletons, error toasts, empty states ("No books found", "Your cart is empty"), responsive design for mobile/tablet, check all pages against the Aurelia design system.
-- [ ] **P8-T6** — End-to-end smoke test: register → browse → search → add to cart → checkout → invoice email → rate book → cancel order → refund flow. Update README with final setup instructions.
+- [x] **P8-T6** — End-to-end smoke test: register → browse → search → add to cart → checkout → invoice email → rate book → cancel order → refund flow. Update README with final setup instructions.
 
 ---
 

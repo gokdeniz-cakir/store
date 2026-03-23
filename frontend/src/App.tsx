@@ -10,6 +10,7 @@ import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import OrderConfirmationPage from './pages/OrderConfirmationPage'
 import OrderDetailPage from './pages/OrderDetailPage'
 import OrderHistoryPage from './pages/OrderHistoryPage'
 import RegisterPage from './pages/RegisterPage'
@@ -48,6 +49,14 @@ function App() {
               </PrivateRoute>
             }
             path="orders"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['CUSTOMER']}>
+                <OrderConfirmationPage />
+              </PrivateRoute>
+            }
+            path="orders/:orderId/confirmation"
           />
           <Route
             element={

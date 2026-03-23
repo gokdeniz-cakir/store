@@ -44,3 +44,11 @@ export async function getOrder(orderId: number) {
   const response = await api.get<CustomerOrder>(`/orders/${orderId}`)
   return response.data
 }
+
+export async function downloadOrderInvoice(orderId: number) {
+  const response = await api.get<Blob>(`/orders/${orderId}/invoice`, {
+    responseType: 'blob',
+  })
+
+  return response.data
+}

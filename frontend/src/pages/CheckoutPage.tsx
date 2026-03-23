@@ -59,9 +59,8 @@ function CheckoutPage() {
       })
 
       clearCart()
-      navigate(`/orders/${order.id}`, {
+      navigate(`/orders/${order.id}/confirmation`, {
         replace: true,
-        state: { notice: 'Order placed successfully. Your invoice and email flow arrive in Phase 5.' },
       })
     } catch (error: unknown) {
       setErrorMessage(getApiErrorMessage(error, 'Unable to place the order.'))

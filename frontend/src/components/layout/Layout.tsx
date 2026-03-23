@@ -146,6 +146,13 @@ function Layout() {
                   </Link>
                 </li>
               ) : null}
+              {user?.role === 'CUSTOMER' ? (
+                <li>
+                  <Link className="nav-link hover:text-crimson-700" to="/orders">
+                    Orders
+                  </Link>
+                </li>
+              ) : null}
               <li>
                 <Link className="nav-link hover:text-crimson-700" to={accountHref}>
                   {isAuthenticated ? 'Account' : 'Sign In'}

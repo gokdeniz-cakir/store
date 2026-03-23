@@ -1,5 +1,5 @@
 import { ArrowRight, ShoppingBagOpen, Trash } from '@phosphor-icons/react'
-import { useState, type ChangeEvent } from 'react'
+import type { ChangeEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
@@ -10,7 +10,6 @@ function CartPage() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
   const { cartItems, clearCart, itemCount, removeItem, subtotal, updateQuantity } = useCart()
-  const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null)
 
   function handleQuantityChange(bookId: number, event: ChangeEvent<HTMLInputElement>) {
     const nextQuantity = Number(event.target.value)
@@ -28,7 +27,7 @@ function CartPage() {
       return
     }
 
-    setCheckoutNotice('Checkout form delivery continues in Phase 4. Your cart is ready for that step.')
+    navigate('/checkout')
   }
 
   if (cartItems.length === 0) {
@@ -200,12 +199,6 @@ function CartPage() {
               Guests are redirected to sign in before checkout. Your cart remains stored
               locally while you authenticate.
             </p>
-          ) : null}
-
-          {checkoutNotice ? (
-            <div className="mt-5 border border-gold-500/30 bg-gold-500/10 px-4 py-3 text-sm text-ink-800">
-              {checkoutNotice}
-            </div>
           ) : null}
 
           <div className="mt-8 flex flex-col gap-3">

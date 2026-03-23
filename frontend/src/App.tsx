@@ -7,8 +7,11 @@ import BookDetailPage from './pages/BookDetailPage'
 import AdminPortalPage from './pages/AdminPortalPage'
 import BooksPage from './pages/BooksPage'
 import CartPage from './pages/CartPage'
+import CheckoutPage from './pages/CheckoutPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import OrderDetailPage from './pages/OrderDetailPage'
+import OrderHistoryPage from './pages/OrderHistoryPage'
 import RegisterPage from './pages/RegisterPage'
 
 function App() {
@@ -29,6 +32,30 @@ function App() {
               </PrivateRoute>
             }
             path="account"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['CUSTOMER']}>
+                <CheckoutPage />
+              </PrivateRoute>
+            }
+            path="checkout"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['CUSTOMER']}>
+                <OrderHistoryPage />
+              </PrivateRoute>
+            }
+            path="orders"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['CUSTOMER']}>
+                <OrderDetailPage />
+              </PrivateRoute>
+            }
+            path="orders/:orderId"
           />
           <Route
             element={

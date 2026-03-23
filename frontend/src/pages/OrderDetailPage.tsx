@@ -1,8 +1,8 @@
-import { ArrowLeft, Package, Receipt } from '@phosphor-icons/react'
+import { ArrowLeft, DownloadSimple, Package, Receipt } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 
-import { getOrder } from '../services/orderService'
+import { downloadOrderInvoice, getOrder } from '../services/orderService'
 import type { CustomerOrder } from '../types/order'
 import { getApiErrorMessage } from '../utils/apiError'
 import { formatCurrency } from '../utils/catalog'
@@ -27,6 +27,8 @@ function OrderDetailPage() {
     error: null,
     isLoading: true,
   })
+  const [downloadError, setDownloadError] = useState<string | null>(null)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   useEffect(() => {
     if (!hasValidOrderId) {
@@ -108,6 +110,28 @@ function OrderDetailPage() {
     typeof location.state === 'object' && location.state && 'notice' in location.state
       ? String(location.state.notice)
       : null
+
+  async function handleInvoiceDownload() {
+    setDownloadError(null)
+    setIsDownloading(true)
+
+    try {
+      const invoiceBlob = await downloadOrderInvoice(order.id)
+      const downloadUrl = window.URL.createObjectURL(invoiceBlob)
+      const anchor = document.createElement('a')
+
+      anchor.href = downloadUrl
+      anchor.download = `aurelia-order-${order.id}-invoice.pdf`
+      document.body.append(anchor)
+      anchor.click()
+      anchor.remove()
+      window.URL.revokeObjectURL(downloadUrl)
+    } catch (error: unknown) {
+      setDownloadError(getApiErrorMessage(error, 'Unable to download the invoice right now.'))
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   return (
     <main className="flex-1 bg-parchment-50 py-16 md:py-20">
@@ -194,6 +218,22 @@ function OrderDetailPage() {
                   <dd>{formatCurrency(order.totalPrice)}</dd>
                 </div>
               </dl>
+
+              <button
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-ink-900 px-5 py-3 text-xs uppercase tracking-nav text-white transition-colors hover:bg-crimson-700 disabled:cursor-not-allowed disabled:bg-ink-500"
+                disabled={isDownloading}
+                onClick={handleInvoiceDownload}
+                type="button"
+              >
+                <DownloadSimple className="text-sm" />
+                {isDownloading ? 'Preparing Invoice...' : 'Download Invoice'}
+              </button>
+
+              {downloadError ? (
+                <div className="mt-4 border border-crimson-700/20 bg-crimson-700/5 px-4 py-3 text-sm text-crimson-800">
+                  {downloadError}
+                </div>
+              ) : null}
             </article>
           </aside>
         </section>

@@ -2,6 +2,9 @@ package com.aurelia.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,20 +22,25 @@ import com.aurelia.dto.CategoryResponseDto;
 import com.aurelia.model.Book;
 import com.aurelia.model.Category;
 import com.aurelia.repository.BookRepository;
+import com.aurelia.repository.BookRatingSummaryProjection;
 import com.aurelia.repository.CategoryRepository;
+import com.aurelia.repository.ReviewRepository;
 
 @Service
 public class BookService {
 
 	private final BookRepository bookRepository;
 	private final CategoryRepository categoryRepository;
+	private final ReviewRepository reviewRepository;
 
 	public BookService(
 		BookRepository bookRepository,
-		CategoryRepository categoryRepository
+		CategoryRepository categoryRepository,
+		ReviewRepository reviewRepository
 	) {
 		this.bookRepository = bookRepository;
 		this.categoryRepository = categoryRepository;
+		this.reviewRepository = reviewRepository;
 	}
 
 	@Transactional(readOnly = true)
@@ -42,17 +50,28 @@ public class BookService {
 		boolean inStockOnly,
 		Pageable pageable
 	) {
+		String normalizedSearchTerm = normalizeSearchTerm(searchTerm);
 		Pageable normalizedPageable = normalizePageable(pageable);
-		Page<Book> books = bookRepository.searchCatalog(
-			normalizeSearchTerm(searchTerm),
-			categoryId,
-			inStockOnly,
-			normalizedPageable
+		Page<Book> books = isPopularitySort(pageable)
+			? bookRepository.searchCatalogOrderByPopularity(
+				normalizedSearchTerm,
+				categoryId,
+				inStockOnly,
+				normalizedPageable
+			)
+			: bookRepository.searchCatalog(
+				normalizedSearchTerm,
+				categoryId,
+				inStockOnly,
+				normalizedPageable
+			);
+		Map<Long, BookRatingSummaryProjection> ratingsByBookId = loadRatingsByBookId(
+			books.getContent().stream().map(Book::getId).toList()
 		);
 
 		List<BookResponseDto> content = books.getContent()
 			.stream()
-			.map(this::mapBook)
+			.map(book -> mapBook(book, ratingsByBookId.get(book.getId())))
 			.toList();
 
 		return new PageImpl<>(content, normalizedPageable, books.getTotalElements());
@@ -60,7 +79,8 @@ public class BookService {
 
 	@Transactional(readOnly = true)
 	public BookResponseDto getBook(Long id) {
-		return mapBook(findBook(id));
+		Book book = findBook(id);
+		return mapBook(book, loadRatingsByBookId(List.of(id)).get(id));
 	}
 
 	@Transactional
@@ -164,6 +184,11 @@ public class BookService {
 		};
 	}
 
+	private boolean isPopularitySort(Pageable pageable) {
+		return pageable.getSort().stream()
+			.anyMatch(order -> "popularity".equals(order.getProperty()));
+	}
+
 	private String normalizeSearchTerm(String searchTerm) {
 		if (searchTerm == null) {
 			return "";
@@ -173,7 +198,20 @@ public class BookService {
 		return trimmedSearchTerm.isEmpty() ? "" : trimmedSearchTerm;
 	}
 
+	private Map<Long, BookRatingSummaryProjection> loadRatingsByBookId(List<Long> bookIds) {
+		if (bookIds.isEmpty()) {
+			return Map.of();
+		}
+
+		return reviewRepository.summarizeApprovedRatingsByBookIds(bookIds).stream()
+			.collect(Collectors.toMap(BookRatingSummaryProjection::getBookId, Function.identity()));
+	}
+
 	private BookResponseDto mapBook(Book book) {
+		return mapBook(book, loadRatingsByBookId(List.of(book.getId())).get(book.getId()));
+	}
+
+	private BookResponseDto mapBook(Book book, BookRatingSummaryProjection ratingSummary) {
 		Category category = book.getCategory();
 
 		return new BookResponseDto(
@@ -199,6 +237,8 @@ public class BookService {
 				category.getDescription(),
 				category.getIconName()
 			),
+			ratingSummary != null ? ratingSummary.getAverageRating() : 0.0,
+			ratingSummary != null ? ratingSummary.getReviewCount() : 0L,
 			book.getCreatedAt(),
 			book.getUpdatedAt(),
 			book.getVersion()

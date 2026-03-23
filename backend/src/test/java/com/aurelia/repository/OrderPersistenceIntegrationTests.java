@@ -17,6 +17,8 @@ import com.aurelia.model.OrderItem;
 import com.aurelia.model.OrderStatus;
 import com.aurelia.model.User;
 import com.aurelia.model.UserRole;
+import com.aurelia.repository.ReviewRepository;
+import com.aurelia.repository.WishlistRepository;
 
 @SpringBootTest
 class OrderPersistenceIntegrationTests {
@@ -37,10 +39,18 @@ class OrderPersistenceIntegrationTests {
 	private OrderRepository orderRepository;
 
 	@Autowired
+	private ReviewRepository reviewRepository;
+
+	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private WishlistRepository wishlistRepository;
 
 	@BeforeEach
 	void setUp() {
+		reviewRepository.deleteAll();
+		wishlistRepository.deleteAll();
 		orderItemRepository.deleteAll();
 		orderRepository.deleteAll();
 		creditCardRepository.deleteAll();

@@ -31,7 +31,9 @@ import com.aurelia.repository.CategoryRepository;
 import com.aurelia.repository.CreditCardRepository;
 import com.aurelia.repository.OrderItemRepository;
 import com.aurelia.repository.OrderRepository;
+import com.aurelia.repository.ReviewRepository;
 import com.aurelia.repository.UserRepository;
+import com.aurelia.repository.WishlistRepository;
 import com.aurelia.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -71,13 +73,21 @@ class OrderControllerIntegrationTests {
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
+	private ReviewRepository reviewRepository;
+
+	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private WishlistRepository wishlistRepository;
 
 	@LocalServerPort
 	private int port;
 
 	@BeforeEach
 	void setUp() {
+		reviewRepository.deleteAll();
+		wishlistRepository.deleteAll();
 		orderItemRepository.deleteAll();
 		orderRepository.deleteAll();
 		creditCardRepository.deleteAll();

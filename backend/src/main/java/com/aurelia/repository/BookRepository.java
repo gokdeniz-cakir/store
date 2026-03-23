@@ -35,6 +35,44 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 		Pageable pageable
 	);
 
+	@Query(
+		value = """
+			select book
+			from Book book
+			left join Review review
+				on review.book = book
+				and review.approved = true
+			where (
+				:searchTerm = ''
+				or lower(book.title) like lower(concat('%', :searchTerm, '%'))
+				or lower(book.author) like lower(concat('%', :searchTerm, '%'))
+				or lower(coalesce(book.description, '')) like lower(concat('%', :searchTerm, '%'))
+			)
+			and (:categoryId is null or book.category.id = :categoryId)
+			and (:inStockOnly = false or book.stockQuantity > 0)
+			group by book
+			order by coalesce(avg(review.rating), 0) desc, count(review.id) desc, book.createdAt desc
+			""",
+		countQuery = """
+			select count(book)
+			from Book book
+			where (
+				:searchTerm = ''
+				or lower(book.title) like lower(concat('%', :searchTerm, '%'))
+				or lower(book.author) like lower(concat('%', :searchTerm, '%'))
+				or lower(coalesce(book.description, '')) like lower(concat('%', :searchTerm, '%'))
+			)
+			and (:categoryId is null or book.category.id = :categoryId)
+			and (:inStockOnly = false or book.stockQuantity > 0)
+			"""
+	)
+	Page<Book> searchCatalogOrderByPopularity(
+		@Param("searchTerm") String searchTerm,
+		@Param("categoryId") Long categoryId,
+		@Param("inStockOnly") boolean inStockOnly,
+		Pageable pageable
+	);
+
 	@EntityGraph(attributePaths = "category")
 	Optional<Book> findWithCategoryById(Long id);
 

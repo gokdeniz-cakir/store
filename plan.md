@@ -65,7 +65,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 > Goal: Customers rate/review books, product managers moderate, wishlists work.
 
 - [x] **P6-T1** — Create Flyway migration for `reviews` (id, book_id, customer_id, rating 1-5, comment, approved default false, created_at; unique on book+customer) and `wishlists` (id, customer_id, book_id, added_at; unique on customer+book). Create entities and repositories.
-- [ ] **P6-T2** — Implement `ReviewService` and `ReviewController`: create review (customer, auth required), get approved reviews (public), get pending reviews (PRODUCT_MANAGER), approve/reject. Implement `WishlistService` and `WishlistController`: add, remove, list. Update book queries to include average rating for popularity sorting.
+- [x] **P6-T2** — Implement `ReviewService` and `ReviewController`: create review (customer, auth required), get approved reviews (public), get pending reviews (PRODUCT_MANAGER), approve/reject. Implement `WishlistService` and `WishlistController`: add, remove, list. Update book queries to include average rating for popularity sorting.
 - [ ] **P6-T3** — Frontend: Add star rating display to book cards and detail page. Build review section on detail page (approved reviews list + submit form with star selector and textarea for authenticated users).
 - [ ] **P6-T4** — Frontend: Add wishlist heart toggle (Phosphor heart icon) on book cards and detail page. Build Wishlist page. Connect heart icon in header to wishlist page.
 

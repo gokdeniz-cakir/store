@@ -3,28 +3,19 @@ package com.aurelia.dto;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record BookResponseDto(
+public record WishlistItemResponseDto(
 	Long id,
+	Long bookId,
 	String title,
 	String author,
-	String isbn,
 	String edition,
-	String description,
-	Integer stockQuantity,
 	BigDecimal price,
 	BigDecimal originalPrice,
-	String returnPolicy,
-	String publisher,
-	Integer pageCount,
-	String language,
-	Integer publicationYear,
-	String coverImageUrl,
+	Integer stockQuantity,
 	String coverColor,
 	CategoryResponseDto category,
 	Double averageRating,
 	Long reviewCount,
-	Instant createdAt,
-	Instant updatedAt,
-	Long version
+	Instant addedAt
 ) {
 }

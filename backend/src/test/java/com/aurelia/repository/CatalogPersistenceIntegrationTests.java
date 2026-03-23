@@ -14,6 +14,8 @@ import com.aurelia.model.Category;
 import com.aurelia.repository.CreditCardRepository;
 import com.aurelia.repository.OrderItemRepository;
 import com.aurelia.repository.OrderRepository;
+import com.aurelia.repository.ReviewRepository;
+import com.aurelia.repository.WishlistRepository;
 
 @SpringBootTest
 class CatalogPersistenceIntegrationTests {
@@ -33,8 +35,16 @@ class CatalogPersistenceIntegrationTests {
 	@Autowired
 	private OrderRepository orderRepository;
 
+	@Autowired
+	private ReviewRepository reviewRepository;
+
+	@Autowired
+	private WishlistRepository wishlistRepository;
+
 	@BeforeEach
 	void setUp() {
+		reviewRepository.deleteAll();
+		wishlistRepository.deleteAll();
 		orderItemRepository.deleteAll();
 		orderRepository.deleteAll();
 		creditCardRepository.deleteAll();

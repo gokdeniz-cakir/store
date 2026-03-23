@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,6 +58,18 @@ public class OrderController {
 	@PreAuthorize("hasRole('CUSTOMER')")
 	public OrderResponseDto getOrder(@PathVariable Long id, Authentication authentication) {
 		return orderService.getOrder(authentication.getName(), id);
+	}
+
+	@PatchMapping("/{id}/cancel")
+	@PreAuthorize("hasRole('CUSTOMER')")
+	public OrderResponseDto cancelOrder(@PathVariable Long id, Authentication authentication) {
+		return orderService.cancelOrder(authentication.getName(), id);
+	}
+
+	@PostMapping("/{id}/refund")
+	@PreAuthorize("hasRole('CUSTOMER')")
+	public OrderResponseDto requestRefund(@PathVariable Long id, Authentication authentication) {
+		return orderService.requestRefund(authentication.getName(), id);
 	}
 
 	@GetMapping("/{id}/invoice")

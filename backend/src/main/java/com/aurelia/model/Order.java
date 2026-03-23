@@ -62,6 +62,12 @@ public class Order {
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private Instant createdAt;
 
+	@Column(name = "delivered_at")
+	private Instant deliveredAt;
+
+	@Column(name = "refund_requested_at")
+	private Instant refundRequestedAt;
+
 	@UpdateTimestamp
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;

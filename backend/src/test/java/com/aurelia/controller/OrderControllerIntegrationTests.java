@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -62,6 +65,9 @@ class OrderControllerIntegrationTests {
 
 	@Autowired
 	private JwtService jwtService;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	private OrderItemRepository orderItemRepository;
@@ -294,6 +300,91 @@ class OrderControllerIntegrationTests {
 		assertThat(new String(response.body(), 0, 4)).isEqualTo("%PDF");
 	}
 
+	@Test
+	void shouldCancelProcessingOrderAndRestoreStock() throws IOException, InterruptedException {
+		com.aurelia.model.User customer = createPersistedUser("order-customer@example.com", UserRole.CUSTOMER);
+		Category category = seedCategory("Cancellation Shelf");
+		Book book = seedBook(category, "9780306400205", 2);
+		Order order = createOrderWithItem(customer, book, OrderStatus.PROCESSING, 2, "98.00", "0.00");
+		String token = createToken(customer.getEmail(), UserRole.CUSTOMER);
+
+		HttpResponse<String> response = sendRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/orders/" + order.getId() + "/cancel"))
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+				.method("PATCH", HttpRequest.BodyPublishers.noBody())
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(200);
+		assertThat(objectMapper.readTree(response.body()).get("status").asText()).isEqualTo("CANCELLED");
+		assertThat(bookRepository.findById(book.getId()).orElseThrow().getStockQuantity()).isEqualTo(4);
+	}
+
+	@Test
+	void shouldRejectCancellationForDeliveredOrder() throws IOException, InterruptedException {
+		com.aurelia.model.User customer = createPersistedUser("order-customer@example.com", UserRole.CUSTOMER);
+		Category category = seedCategory("Delivered Shelf");
+		Book book = seedBook(category, "9780306400206", 3);
+		Order order = createOrderWithItem(customer, book, OrderStatus.DELIVERED, 1, "49.00", "0.00");
+		String token = createToken(customer.getEmail(), UserRole.CUSTOMER);
+
+		HttpResponse<String> response = sendRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/orders/" + order.getId() + "/cancel"))
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+				.method("PATCH", HttpRequest.BodyPublishers.noBody())
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(409);
+	}
+
+	@Test
+	void shouldRequestRefundWithinThirtyDaysOfDelivery() throws IOException, InterruptedException {
+		com.aurelia.model.User customer = createPersistedUser("order-customer@example.com", UserRole.CUSTOMER);
+		Category category = seedCategory("Refund Shelf");
+		Book book = seedBook(category, "9780306400207", 5);
+		Order order = createOrderWithItem(customer, book, OrderStatus.DELIVERED, 1, "49.00", "10.00");
+		setOrderLifecycleDates(order.getId(), "2026-03-10T10:00:00Z", "2026-03-20T10:00:00Z");
+		String token = createToken(customer.getEmail(), UserRole.CUSTOMER);
+
+		HttpResponse<String> response = sendRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/orders/" + order.getId() + "/refund"))
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+				.POST(HttpRequest.BodyPublishers.noBody())
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(200);
+		assertThat(objectMapper.readTree(response.body()).get("status").asText()).isEqualTo("REFUND_REQUESTED");
+		assertThat(objectMapper.readTree(response.body()).get("refundAmount").decimalValue())
+			.isEqualByComparingTo("49.00");
+		assertThat(orderRepository.findById(order.getId()).orElseThrow().getRefundRequestedAt()).isNotNull();
+	}
+
+	@Test
+	void shouldRejectRefundRequestAfterThirtyDays() throws IOException, InterruptedException {
+		com.aurelia.model.User customer = createPersistedUser("order-customer@example.com", UserRole.CUSTOMER);
+		Category category = seedCategory("Expired Refund Shelf");
+		Book book = seedBook(category, "9780306400208", 5);
+		Order order = createOrderWithItem(customer, book, OrderStatus.DELIVERED, 1, "49.00", "0.00");
+		setOrderLifecycleDates(order.getId(), "2025-01-10T10:00:00Z", "2025-01-20T10:00:00Z");
+		String token = createToken(customer.getEmail(), UserRole.CUSTOMER);
+
+		HttpResponse<String> response = sendRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/orders/" + order.getId() + "/refund"))
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+				.POST(HttpRequest.BodyPublishers.noBody())
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(409);
+		assertThat(orderRepository.findById(order.getId()).orElseThrow().getStatus()).isEqualTo(OrderStatus.DELIVERED);
+	}
+
 	private com.aurelia.model.User createPersistedUser(String email, UserRole role) {
 		return userRepository.saveAndFlush(com.aurelia.model.User.builder()
 			.name("Order Test User")
@@ -343,22 +434,42 @@ class OrderControllerIntegrationTests {
 	}
 
 	private Order createOrderWithItem(com.aurelia.model.User customer, Book book) {
+		return createOrderWithItem(customer, book, OrderStatus.PROCESSING, 1, "49.00", "0.00");
+	}
+
+	private Order createOrderWithItem(
+		com.aurelia.model.User customer,
+		Book book,
+		OrderStatus status,
+		int quantity,
+		String unitPrice,
+		String discountApplied
+	) {
 		Order order = orderRepository.saveAndFlush(Order.builder()
 			.customer(customer)
-			.totalPrice(book.getPrice())
-			.status(OrderStatus.PROCESSING)
+			.totalPrice(new BigDecimal(unitPrice).multiply(BigDecimal.valueOf(quantity)))
+			.status(status)
 			.shippingAddress("12 Aurelia Lane")
 			.build());
 
 		orderItemRepository.saveAndFlush(OrderItem.builder()
 			.order(order)
 			.book(book)
-			.quantity(1)
-			.unitPrice(book.getPrice())
-			.discountApplied(BigDecimal.ZERO)
+			.quantity(quantity)
+			.unitPrice(new BigDecimal(unitPrice))
+			.discountApplied(new BigDecimal(discountApplied))
 			.build());
 
 		return orderRepository.findById(order.getId()).orElseThrow();
+	}
+
+	private void setOrderLifecycleDates(Long orderId, String updatedAt, String deliveredAt) {
+		jdbcTemplate.update(
+			"update orders set updated_at = ?, delivered_at = ? where id = ?",
+			Timestamp.from(Instant.parse(updatedAt)),
+			Timestamp.from(Instant.parse(deliveredAt)),
+			orderId
+		);
 	}
 
 	private HttpResponse<String> sendRequest(HttpRequest request)

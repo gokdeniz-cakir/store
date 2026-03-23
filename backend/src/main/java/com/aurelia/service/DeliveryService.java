@@ -1,6 +1,7 @@
 package com.aurelia.service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,6 +51,9 @@ public class DeliveryService {
 		}
 
 		order.setStatus(nextStatus);
+		if (nextStatus == OrderStatus.DELIVERED && order.getDeliveredAt() == null) {
+			order.setDeliveredAt(Instant.now());
+		}
 		Order savedOrder = orderRepository.save(order);
 		delivery.setOrder(savedOrder);
 

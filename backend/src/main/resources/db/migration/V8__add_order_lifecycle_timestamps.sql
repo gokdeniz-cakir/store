@@ -1,0 +1,3 @@
+ALTER TABLE orders
+ADD COLUMN delivered_at TIMESTAMPTZ NULL,
+ADD COLUMN refund_requested_at TIMESTAMPTZ NULL;

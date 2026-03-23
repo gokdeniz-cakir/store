@@ -1,6 +1,8 @@
 package com.aurelia.service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +43,7 @@ import jakarta.transaction.Transactional;
 public class OrderService {
 
 	private static final int MAX_ORDER_RETRY_ATTEMPTS = 3;
+	private static final Duration REFUND_REQUEST_WINDOW = Duration.ofDays(30);
 
 	private final AesEncryptionUtil aesEncryptionUtil;
 	private final BookRepository bookRepository;
@@ -122,6 +125,52 @@ public class OrderService {
 		}
 
 		return invoiceService.generateInvoicePdf(order);
+	}
+
+	@Transactional
+	public OrderResponseDto cancelOrder(String customerEmail, Long orderId) {
+		Order order = findCustomerOrder(customerEmail, orderId);
+
+		if (order.getStatus() != OrderStatus.PROCESSING) {
+			throw new ResponseStatusException(
+				HttpStatus.CONFLICT,
+				"Only processing orders can be cancelled."
+			);
+		}
+
+		restoreStock(order);
+		order.setStatus(OrderStatus.CANCELLED);
+		order.setRefundRequestedAt(null);
+		Order savedOrder = orderRepository.saveAndFlush(order);
+
+		return mapOrder(savedOrder);
+	}
+
+	@Transactional
+	public OrderResponseDto requestRefund(String customerEmail, Long orderId) {
+		Order order = findCustomerOrder(customerEmail, orderId);
+
+		if (order.getStatus() != OrderStatus.DELIVERED) {
+			throw new ResponseStatusException(
+				HttpStatus.CONFLICT,
+				"Refunds can only be requested for delivered orders."
+			);
+		}
+
+		Instant deliveredAt = resolveDeliveredAt(order);
+		if (deliveredAt == null || deliveredAt.plus(REFUND_REQUEST_WINDOW).isBefore(Instant.now())) {
+			throw new ResponseStatusException(
+				HttpStatus.CONFLICT,
+				"Refund requests are only available within 30 days of delivery."
+			);
+		}
+
+		order.setDeliveredAt(deliveredAt);
+		order.setStatus(OrderStatus.REFUND_REQUESTED);
+		order.setRefundRequestedAt(Instant.now());
+		Order savedOrder = orderRepository.saveAndFlush(order);
+
+		return mapOrder(savedOrder);
 	}
 
 	private OrderResponseDto placeOrderInTransaction(String customerEmail, PlaceOrderRequestDto request) {
@@ -209,6 +258,12 @@ public class OrderService {
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Customer not found."));
 	}
 
+	private Order findCustomerOrder(String customerEmail, Long orderId) {
+		User customer = findCustomer(customerEmail);
+		return orderRepository.findByIdAndCustomerId(orderId, customer.getId())
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found."));
+	}
+
 	private Map<Long, Book> loadBooks(PlaceOrderRequestDto request) {
 		List<Long> bookIds = request.items().stream()
 			.map(item -> item.bookId())
@@ -245,12 +300,55 @@ public class OrderService {
 		return new OrderResponseDto(
 			order.getId(),
 			order.getTotalPrice(),
+			order.getTotalPrice(),
 			order.getStatus().name(),
 			order.getShippingAddress(),
 			items,
+			order.getStatus() == OrderStatus.PROCESSING,
+			isRefundEligible(order),
 			order.getCreatedAt(),
+			order.getDeliveredAt(),
+			order.getRefundRequestedAt(),
 			order.getUpdatedAt()
 		);
+	}
+
+	private boolean isRefundEligible(Order order) {
+		if (order.getStatus() != OrderStatus.DELIVERED) {
+			return false;
+		}
+
+		Instant deliveredAt = resolveDeliveredAt(order);
+		return deliveredAt != null && !deliveredAt.plus(REFUND_REQUEST_WINDOW).isBefore(Instant.now());
+	}
+
+	private Instant resolveDeliveredAt(Order order) {
+		if (order.getDeliveredAt() != null) {
+			return order.getDeliveredAt();
+		}
+
+		if (
+			order.getStatus() == OrderStatus.DELIVERED ||
+			order.getStatus() == OrderStatus.REFUND_REQUESTED ||
+			order.getStatus() == OrderStatus.REFUNDED
+		) {
+			return order.getUpdatedAt();
+		}
+
+		return null;
+	}
+
+	private void restoreStock(Order order) {
+		Map<Long, Book> booksToRestore = new HashMap<>();
+
+		for (OrderItem item : order.getItems()) {
+			Book book = item.getBook();
+			book.setStockQuantity(book.getStockQuantity() + item.getQuantity());
+			booksToRestore.put(book.getId(), book);
+		}
+
+		bookRepository.saveAll(booksToRestore.values());
+		bookRepository.flush();
 	}
 
 	private String normalizeEmail(String email) {

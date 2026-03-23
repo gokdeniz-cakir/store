@@ -4,6 +4,7 @@ import PrivateRoute from './components/auth/PrivateRoute'
 import Layout from './components/layout/Layout'
 import AccountPage from './pages/AccountPage'
 import AdminPortalPage from './pages/AdminPortalPage'
+import BooksPage from './pages/BooksPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route element={<HomePage />} index />
+          <Route element={<BooksPage />} path="books" />
           <Route element={<LoginPage />} path="login" />
           <Route element={<RegisterPage />} path="register" />
           <Route

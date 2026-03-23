@@ -15,18 +15,19 @@ import { useAuth } from '../../hooks/useAuth'
 
 const primaryNavLinks = [
   { href: '/#hero', label: 'Limited Editions' },
-  { href: '/#new-releases', label: 'New Releases' },
-  { href: '/#collections', label: 'Collections' },
-  { href: '/#editors-choice', label: 'Fiction' },
-  { href: '/#reading-room', label: 'Non-Fiction' },
+  { label: 'Catalogue', to: '/books' },
+  { label: 'New Releases', to: '/books?sort=createdAt,desc' },
+  { label: 'Collections', to: '/books' },
+  { label: 'Fiction', to: '/books?category=Fiction' },
+  { label: 'Non-Fiction', to: '/books?category=Non-Fiction' },
   { href: '/#atelier', label: 'Gifts' },
 ] as const
 
 const exploreLinks = [
-  { href: '/#new-releases', label: 'New Releases' },
-  { href: '/#collections', label: 'Curated Libraries' },
-  { href: '/#hero', label: 'Limited Editions' },
-  { href: '/#editors-choice', label: 'Editor’s Choice' },
+  { href: '/books?sort=createdAt,desc', label: 'New Releases' },
+  { href: '/books', label: 'Curated Libraries' },
+  { href: '/books', label: 'Browse Catalogue' },
+  { href: '/books?category=Classic%20Literature', label: 'Editor’s Choice' },
   { href: '/#atelier', label: 'Gift Services' },
 ] as const
 
@@ -89,13 +90,13 @@ function Layout() {
             </div>
 
             <div className="flex items-center justify-center gap-6 text-ink-800 lg:w-1/3 lg:justify-end">
-              <button
+              <Link
                 aria-label="Search the catalogue"
                 className="transition-colors hover:text-crimson-700"
-                type="button"
+                to="/books"
               >
                 <MagnifyingGlass className="text-2xl" />
-              </button>
+              </Link>
               <Link
                 aria-label={isAuthenticated ? 'View your account' : 'Sign in or register'}
                 className="transition-colors hover:text-crimson-700"
@@ -127,9 +128,15 @@ function Layout() {
             <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-[12px] font-medium uppercase tracking-nav text-ink-800">
               {primaryNavLinks.map((link) => (
                 <li key={link.label}>
-                  <a className="nav-link hover:text-crimson-700" href={link.href}>
-                    {link.label}
-                  </a>
+                  {'to' in link ? (
+                    <Link className="nav-link hover:text-crimson-700" to={link.to}>
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a className="nav-link hover:text-crimson-700" href={link.href}>
+                      {link.label}
+                    </a>
+                  )}
                 </li>
               ))}
               {user?.role !== 'CUSTOMER' ? (

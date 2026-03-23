@@ -18,6 +18,7 @@ import {
 } from '@phosphor-icons/react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { getHealthStatus } from '../services/healthService'
 import type { HealthResponse } from '../types/health'
@@ -79,24 +80,28 @@ const categoryCards = [
   {
     title: 'Science Fiction & Fantasy',
     description: 'Otherworldly realms in spectacular bindings.',
+    href: '/books?category=Sci-Fi%20%26%20Fantasy',
     icon: Planet,
     backgroundClassName: 'bg-[#2a3036]',
   },
   {
     title: 'History & Antiquity',
     description: 'The chronicles of civilization, preserved.',
+    href: '/books?category=History%20%26%20Antiquity',
     icon: Bank,
     backgroundClassName: 'bg-[#4a2e2e]',
   },
   {
     title: 'Classic Fiction',
     description: 'Timeless stories in definitive editions.',
+    href: '/books?category=Classic%20Literature',
     icon: Leaf,
     backgroundClassName: 'bg-[#2d4234]',
   },
   {
     title: 'Mystery & Crime',
     description: 'Thrilling tales bound with intrigue.',
+    href: '/books?category=Mystery%20%26%20Crime',
     icon: Sparkle,
     backgroundClassName: 'bg-[#232b38]',
   },
@@ -203,12 +208,12 @@ function HomePage() {
               slipcase.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-6">
-              <a
+              <Link
                 className="border border-white bg-white px-8 py-4 text-xs font-semibold uppercase tracking-announcement text-ink-900 transition-all duration-300 hover:border-gold-500 hover:bg-gold-500 hover:text-white"
-                href="#new-releases"
+                to="/books?category=Classic%20Literature"
               >
                 Explore Edition
-              </a>
+              </Link>
               <span className="font-serif text-lg italic text-slate-400">$295.00</span>
             </div>
           </div>
@@ -261,9 +266,10 @@ function HomePage() {
               const Icon = category.icon
 
               return (
-                <article
+                <Link
                   className={`group relative block aspect-[4/5] overflow-hidden ${category.backgroundClassName}`}
                   key={category.title}
+                  to={category.href}
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
                   <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
@@ -273,7 +279,7 @@ function HomePage() {
                       {category.description}
                     </p>
                   </div>
-                </article>
+                </Link>
               )
             })}
           </div>
@@ -325,12 +331,12 @@ function HomePage() {
           </div>
 
           <div className="mt-16 text-center">
-            <a
+            <Link
               className="inline-block border border-ink-900 px-10 py-4 text-xs font-semibold uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
-              href="#atelier"
+              to="/books"
             >
               Shop All Books
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -382,12 +388,12 @@ function HomePage() {
                 ))}
               </ul>
 
-              <a
+              <Link
                 className="mt-10 inline-block w-fit bg-ink-900 px-8 py-4 text-xs font-semibold uppercase tracking-nav text-white transition-colors hover:bg-crimson-700"
-                href="#atelier"
+                to="/books?category=Classic%20Literature"
               >
                 View Details - $65.00
-              </a>
+              </Link>
 
               <div className="mt-10 border border-parchment-200 bg-white p-6">
                 <span className="block text-[10px] font-semibold uppercase tracking-eyebrow text-crimson-700">

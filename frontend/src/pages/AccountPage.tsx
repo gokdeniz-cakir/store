@@ -2,6 +2,7 @@ import {
   ArrowRight,
   BookmarksSimple,
   Buildings,
+  Heart,
   Receipt,
   ShoppingBagOpen,
   SignOut,
@@ -167,6 +168,24 @@ function AccountPage() {
                   to="/orders"
                 >
                   View Order History
+                  <ArrowRight className="text-sm" />
+                </Link>
+              </article>
+
+              <article className="border border-parchment-200 bg-white p-8">
+                <div className="flex items-center gap-3">
+                  <Heart className="text-2xl text-crimson-700" />
+                  <h2 className="font-serif text-3xl text-ink-900">Wishlist</h2>
+                </div>
+                <p className="mt-4 text-sm leading-7 text-ink-500">
+                  Save notable editions from the catalog and return to them from a
+                  dedicated shortlist.
+                </p>
+                <Link
+                  className="mt-6 inline-flex items-center gap-2 border border-ink-900 px-5 py-3 text-xs uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+                  to="/wishlist"
+                >
+                  Open Wishlist
                   <ArrowRight className="text-sm" />
                 </Link>
               </article>

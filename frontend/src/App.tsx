@@ -14,6 +14,7 @@ import OrderConfirmationPage from './pages/OrderConfirmationPage'
 import OrderDetailPage from './pages/OrderDetailPage'
 import OrderHistoryPage from './pages/OrderHistoryPage'
 import RegisterPage from './pages/RegisterPage'
+import WishlistPage from './pages/WishlistPage'
 
 function App() {
   return (
@@ -33,6 +34,14 @@ function App() {
               </PrivateRoute>
             }
             path="account"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['CUSTOMER']}>
+                <WishlistPage />
+              </PrivateRoute>
+            }
+            path="wishlist"
           />
           <Route
             element={

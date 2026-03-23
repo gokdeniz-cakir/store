@@ -9,10 +9,11 @@ import {
   XLogo,
   YoutubeLogo,
 } from '@phosphor-icons/react'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../../hooks/useAuth'
 import { useCart } from '../../hooks/useCart'
+import { useWishlist } from '../../hooks/useWishlist'
 
 const primaryNavLinks = [
   { href: '/#hero', label: 'Limited Editions' },
@@ -55,9 +56,13 @@ const socialLinks = [
 
 function Layout() {
   const currentYear = new Date().getFullYear()
+  const location = useLocation()
   const { isAuthenticated, user } = useAuth()
   const { itemCount } = useCart()
+  const { itemCount: wishlistItemCount } = useWishlist()
   const accountHref = isAuthenticated ? '/account' : '/login'
+  const wishlistHref =
+    !isAuthenticated ? '/login' : user?.role === 'CUSTOMER' ? '/wishlist' : '/account'
 
   return (
     <div className="flex min-h-screen flex-col bg-parchment-50 text-ink-900">
@@ -104,13 +109,23 @@ function Layout() {
               >
                 <User className="text-2xl" />
               </Link>
-              <button
+              <Link
                 aria-label="View your wishlist"
-                className="transition-colors hover:text-crimson-700"
-                type="button"
+                className="relative transition-colors hover:text-crimson-700"
+                state={
+                  !isAuthenticated
+                    ? { from: `${location.pathname}${location.search}${location.hash}` }
+                    : undefined
+                }
+                to={wishlistHref}
               >
                 <Heart className="text-2xl" />
-              </button>
+                {user?.role === 'CUSTOMER' && wishlistItemCount > 0 ? (
+                  <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center bg-gold-500 px-1 text-[9px] font-bold text-ink-900">
+                    {wishlistItemCount}
+                  </span>
+                ) : null}
+              </Link>
               <Link
                 aria-label="View your cart"
                 className="relative transition-colors hover:text-crimson-700"
@@ -143,6 +158,13 @@ function Layout() {
                 <li>
                   <Link className="nav-link hover:text-crimson-700" to="/admin">
                     Admin
+                  </Link>
+                </li>
+              ) : null}
+              {user?.role === 'CUSTOMER' ? (
+                <li>
+                  <Link className="nav-link hover:text-crimson-700" to="/wishlist">
+                    Wishlist
                   </Link>
                 </li>
               ) : null}

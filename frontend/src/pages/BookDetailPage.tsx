@@ -9,6 +9,7 @@ import { useEffect, useState, type MouseEvent } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 
 import StarRating from '../components/books/StarRating'
+import WishlistToggleButton from '../components/books/WishlistToggleButton'
 import { getBook } from '../services/bookService'
 import { createReview, getApprovedReviews } from '../services/reviewService'
 import { useCart } from '../hooks/useCart'
@@ -352,6 +353,7 @@ function BookDetailPageInner({ bookId }: BookDetailPageInnerProps) {
               >
                 Explore {book.category.name}
               </Link>
+              <WishlistToggleButton book={book} variant="full" />
             </div>
 
             {notice ? (

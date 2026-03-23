@@ -1,4 +1,5 @@
 import {
+  Bell,
   CaretDown,
   FacebookLogo,
   Heart,
@@ -9,10 +10,12 @@ import {
   XLogo,
   YoutubeLogo,
 } from '@phosphor-icons/react'
+import { useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../../hooks/useAuth'
 import { useCart } from '../../hooks/useCart'
+import { useNotifications } from '../../hooks/useNotifications'
 import { useWishlist } from '../../hooks/useWishlist'
 
 const primaryNavLinks = [
@@ -59,10 +62,13 @@ function Layout() {
   const location = useLocation()
   const { isAuthenticated, user } = useAuth()
   const { itemCount } = useCart()
+  const { markAsRead, notifications, unreadCount } = useNotifications()
   const { itemCount: wishlistItemCount } = useWishlist()
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const accountHref = isAuthenticated ? '/account' : '/login'
   const wishlistHref =
     !isAuthenticated ? '/login' : user?.role === 'CUSTOMER' ? '/wishlist' : '/account'
+  const recentNotifications = notifications.slice(0, 5)
 
   return (
     <div className="flex min-h-screen flex-col bg-parchment-50 text-ink-900">
@@ -109,6 +115,89 @@ function Layout() {
               >
                 <User className="text-2xl" />
               </Link>
+              {user?.role === 'CUSTOMER' ? (
+                <div className="relative">
+                  <button
+                    aria-expanded={isNotificationsOpen}
+                    aria-label="View your notifications"
+                    className="relative transition-colors hover:text-crimson-700"
+                    onClick={() => setIsNotificationsOpen((currentValue) => !currentValue)}
+                    type="button"
+                  >
+                    <Bell className="text-2xl" />
+                    {unreadCount > 0 ? (
+                      <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center bg-gold-500 px-1 text-[9px] font-bold text-ink-900">
+                        {unreadCount}
+                      </span>
+                    ) : null}
+                  </button>
+
+                  {isNotificationsOpen ? (
+                    <div className="absolute right-0 top-12 z-50 w-96 border border-parchment-200 bg-white p-4 shadow-[12px_12px_32px_rgba(28,25,23,0.12)]">
+                      <div className="flex items-center justify-between gap-4 border-b border-parchment-200 pb-3">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-eyebrow text-crimson-700">
+                            Notifications
+                          </p>
+                          <p className="mt-1 text-sm text-ink-500">
+                            Updates for your saved editions
+                          </p>
+                        </div>
+                        <button
+                          className="text-[10px] uppercase tracking-nav text-ink-500 transition-colors hover:text-ink-900"
+                          onClick={() => setIsNotificationsOpen(false)}
+                          type="button"
+                        >
+                          Close
+                        </button>
+                      </div>
+
+                      <div className="mt-4 space-y-3">
+                        {recentNotifications.length === 0 ? (
+                          <div className="border border-parchment-200 bg-parchment-50 px-4 py-6 text-center">
+                            <p className="font-serif text-2xl text-ink-900">No notifications</p>
+                            <p className="mt-2 text-sm leading-7 text-ink-500">
+                              Wishlist discount updates will appear here.
+                            </p>
+                          </div>
+                        ) : (
+                          recentNotifications.map((notification) => (
+                            <div
+                              className={`border px-4 py-4 ${
+                                notification.read
+                                  ? 'border-parchment-200 bg-parchment-50'
+                                  : 'border-gold-500/30 bg-gold-500/10'
+                              }`}
+                              key={notification.id}
+                            >
+                              <div className="flex items-start justify-between gap-4">
+                                <div>
+                                  <p className="font-medium text-ink-900">{notification.bookTitle}</p>
+                                  <p className="mt-2 text-sm leading-7 text-ink-500">
+                                    {notification.message}
+                                  </p>
+                                  <p className="mt-2 text-[10px] uppercase tracking-nav text-ink-500">
+                                    {new Date(notification.createdAt).toLocaleString()}
+                                  </p>
+                                </div>
+                                {!notification.read ? (
+                                  <button
+                                    className="shrink-0 border border-ink-900 px-3 py-2 text-[10px] uppercase tracking-nav text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+                                    onClick={() => void markAsRead(notification.id)}
+                                    type="button"
+                                  >
+                                    Mark Read
+                                  </button>
+                                ) : null}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
               <Link
                 aria-label="View your wishlist"
                 className="relative transition-colors hover:text-crimson-700"

@@ -6,6 +6,7 @@ import Layout from './components/layout/Layout'
 import AdminBooksPage from './pages/AdminBooksPage'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import AdminDeliveriesPage from './pages/AdminDeliveriesPage'
+import AdminDiscountsPage from './pages/AdminDiscountsPage'
 import AdminReviewsPage from './pages/AdminReviewsPage'
 import AdminStockPage from './pages/AdminStockPage'
 import AccountPage from './pages/AccountPage'
@@ -114,6 +115,14 @@ function App() {
               </PrivateRoute>
             }
             path="deliveries"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['SALES_MANAGER']}>
+                <AdminDiscountsPage />
+              </PrivateRoute>
+            }
+            path="discounts"
           />
           <Route
             element={

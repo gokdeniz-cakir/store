@@ -1,4 +1,13 @@
-import { ArrowRight, Books, ChartLine, Package, Quotes, Rows, Tag } from '@phosphor-icons/react'
+import {
+  ArrowRight,
+  Books,
+  ChartLine,
+  Package,
+  Percent,
+  Quotes,
+  Rows,
+  Tag,
+} from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
@@ -24,6 +33,13 @@ const launchCards = [
     label: 'Delivery Management',
     status: 'Active now',
     to: '/admin/deliveries',
+  },
+  {
+    description: 'Apply discount campaigns and notify customers with matching wishlists.',
+    icon: Percent,
+    label: 'Discount Management',
+    status: 'Active now',
+    to: '/admin/discounts',
   },
 ] as const
 

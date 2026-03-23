@@ -1,4 +1,5 @@
 import {
+  Bell,
   BookOpenText,
   Books,
   ChartLine,
@@ -40,6 +41,12 @@ const primaryLinks = [
     to: '/admin/deliveries',
   },
   {
+    description: 'Apply percentage discounts to selected editions',
+    icon: Percent,
+    label: 'Discounts',
+    to: '/admin/discounts',
+  },
+  {
     description: 'Inline stock adjustments for live catalog quantities',
     icon: Rows,
     label: 'Stock',
@@ -54,7 +61,7 @@ const primaryLinks = [
 ] as const
 
 const upcomingLinks = [
-  { icon: Percent, label: 'Discounts' },
+  { icon: Bell, label: 'Notifications' },
   { icon: ChartLine, label: 'Revenue' },
 ] as const
 

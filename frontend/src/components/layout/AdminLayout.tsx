@@ -1,11 +1,11 @@
 import {
-  Bell,
   BookOpenText,
   Books,
   ChartLine,
   Package,
   Percent,
   Quotes,
+  Receipt,
   Rows,
   SignOut,
   SquaresFour,
@@ -15,7 +15,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../../hooks/useAuth'
 
-const primaryLinks = [
+const productManagerLinks = [
   {
     description: 'Overview and current phase handoff',
     icon: SquaresFour,
@@ -60,14 +60,38 @@ const primaryLinks = [
   },
 ] as const
 
-const upcomingLinks = [
-  { icon: Bell, label: 'Notifications' },
-  { icon: ChartLine, label: 'Revenue' },
+const salesManagerLinks = [
+  {
+    description: 'Overview and current campaign tooling',
+    icon: SquaresFour,
+    label: 'Dashboard',
+    to: '/admin',
+  },
+  {
+    description: 'Apply percentage discounts to selected editions',
+    icon: Percent,
+    label: 'Discounts',
+    to: '/admin/discounts',
+  },
+  {
+    description: 'Query invoices by date range and export PDFs',
+    icon: Receipt,
+    label: 'Invoices',
+    to: '/admin/invoices',
+  },
+  {
+    description: 'Track revenue, profit, discounts, and order cadence',
+    icon: ChartLine,
+    label: 'Revenue',
+    to: '/admin/revenue',
+  },
 ] as const
 
 function AdminLayout() {
   const navigate = useNavigate()
   const { logout, user } = useAuth()
+  const isSalesManager = user?.role === 'SALES_MANAGER'
+  const primaryLinks = isSalesManager ? salesManagerLinks : productManagerLinks
 
   function handleLogout() {
     logout()
@@ -93,8 +117,9 @@ function AdminLayout() {
               {user?.role.replaceAll('_', ' ')}
             </p>
             <p className="mt-3 text-sm leading-7 text-slate-300">
-              Product managers can edit the live catalog here. Sales tooling follows in
-              the next admin tasks.
+              {isSalesManager
+                ? 'Sales managers can run campaigns, export invoices, and review revenue performance from this surface.'
+                : 'Product managers can edit the live catalog, moderate reviews, and advance deliveries from this surface.'}
             </p>
           </div>
 
@@ -127,27 +152,6 @@ function AdminLayout() {
               )
             })}
           </nav>
-
-          <div className="mt-10 border-t border-white/10 pt-8">
-            <span className="text-[10px] uppercase tracking-eyebrow text-slate-500">
-              Upcoming Modules
-            </span>
-            <div className="mt-4 space-y-2">
-              {upcomingLinks.map((link) => {
-                const Icon = link.icon
-
-                return (
-                  <div
-                    className="flex items-center gap-3 border border-white/10 px-4 py-3 text-sm text-slate-400"
-                    key={link.label}
-                  >
-                    <Icon className="text-lg text-slate-500" />
-                    <span>{link.label}</span>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
 
           <div className="mt-10 flex flex-col gap-3">
             <Link

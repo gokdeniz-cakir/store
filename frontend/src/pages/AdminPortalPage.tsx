@@ -5,6 +5,7 @@ import {
   Package,
   Percent,
   Quotes,
+  Receipt,
   Rows,
   Tag,
 } from '@phosphor-icons/react'
@@ -12,7 +13,7 @@ import { Link } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
 
-const launchCards = [
+const productManagerCards = [
   {
     description: 'Create, revise, and retire editions from the live storefront catalog.',
     icon: Books,
@@ -35,24 +36,64 @@ const launchCards = [
     to: '/admin/deliveries',
   },
   {
+    description: 'Approve or reject pending customer reviews before they reach the storefront.',
+    icon: Quotes,
+    label: 'Review Moderation',
+    status: 'Active now',
+    to: '/admin/reviews',
+  },
+  {
+    description: 'Adjust live quantities inline to keep stock aligned with the catalog.',
+    icon: Rows,
+    label: 'Stock Management',
+    status: 'Active now',
+    to: '/admin/stock',
+  },
+] as const
+
+const salesManagerCards = [
+  {
     description: 'Apply discount campaigns and notify customers with matching wishlists.',
     icon: Percent,
     label: 'Discount Management',
     status: 'Active now',
     to: '/admin/discounts',
   },
+  {
+    description: 'Review order invoices across any date range and download each PDF directly.',
+    icon: Receipt,
+    label: 'Invoice Management',
+    status: 'Active now',
+    to: '/admin/invoices',
+  },
+  {
+    description: 'Track revenue, realized profit, order volume, and campaign impact over time.',
+    icon: ChartLine,
+    label: 'Revenue Analytics',
+    status: 'Active now',
+    to: '/admin/revenue',
+  },
 ] as const
 
-const roadmap = [
-  { icon: Quotes, label: 'Review moderation', note: 'Active now' },
-  { icon: ChartLine, label: 'Revenue analytics', note: 'Pending Phase 7 task' },
-  { icon: Package, label: 'Delivery dashboards', note: 'More workflow depth arrives next' },
-  { icon: Rows, label: 'Stock controls', note: 'Active now' },
+const productManagerRoadmap = [
+  { icon: Books, label: 'Catalog editing', note: 'Live and storefront-backed' },
+  { icon: Package, label: 'Delivery operations', note: 'Active status flow is live' },
+  { icon: Rows, label: 'Stock controls', note: 'Inline updates are active' },
+  { icon: Quotes, label: 'Review moderation', note: 'Approve or reject pending feedback' },
+] as const
+
+const salesManagerRoadmap = [
+  { icon: Percent, label: 'Campaign tooling', note: 'Discounts and notifications are active' },
+  { icon: Receipt, label: 'Invoice exports', note: 'Range query and PDF retrieval are live' },
+  { icon: ChartLine, label: 'Revenue analytics', note: 'Daily charting and summary cards are active' },
+  { icon: Package, label: 'Order ledger', note: 'Invoices map directly back to live orders' },
 ] as const
 
 function AdminPortalPage() {
   const { user } = useAuth()
   const isProductManager = user?.role === 'PRODUCT_MANAGER'
+  const launchCards = isProductManager ? productManagerCards : salesManagerCards
+  const roadmap = isProductManager ? productManagerRoadmap : salesManagerRoadmap
 
   return (
     <main className="px-8 py-10 md:px-10 md:py-12">
@@ -67,8 +108,8 @@ function AdminPortalPage() {
         </h1>
         <p className="mt-6 max-w-3xl text-base leading-8 text-ink-500">
           You are signed in as {user?.role.replaceAll('_', ' ')}. The admin area now
-          runs on its own layout, separate from the storefront, and product-management
-          controls for books and categories are live.
+          runs on its own layout, separate from the storefront, with live tooling tailored
+          to your manager role.
         </p>
       </section>
 
@@ -110,12 +151,12 @@ function AdminPortalPage() {
             Current Access
           </span>
           <h2 className="mt-5 font-serif text-3xl text-ink-900">
-            {isProductManager ? 'Product management is active' : 'Sales manager preview'}
+            {isProductManager ? 'Product operations are active' : 'Sales reporting is active'}
           </h2>
           <p className="mt-4 text-sm leading-7 text-ink-500">
             {isProductManager
-              ? 'You can now maintain the live books and categories used by the storefront.'
-              : 'The shared admin shell is active for your role, but sales-specific tooling lands in later Phase 7 tasks.'}
+              ? 'You can maintain the live catalog, monitor deliveries, and moderate customer content used by the storefront.'
+              : 'You can run discount campaigns, export invoices, and monitor sales performance without leaving the admin shell.'}
           </p>
         </article>
 

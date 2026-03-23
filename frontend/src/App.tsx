@@ -7,7 +7,9 @@ import AdminBooksPage from './pages/AdminBooksPage'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import AdminDeliveriesPage from './pages/AdminDeliveriesPage'
 import AdminDiscountsPage from './pages/AdminDiscountsPage'
+import AdminInvoicesPage from './pages/AdminInvoicesPage'
 import AdminReviewsPage from './pages/AdminReviewsPage'
+import AdminRevenuePage from './pages/AdminRevenuePage'
 import AdminStockPage from './pages/AdminStockPage'
 import AccountPage from './pages/AccountPage'
 import BookDetailPage from './pages/BookDetailPage'
@@ -123,6 +125,22 @@ function App() {
               </PrivateRoute>
             }
             path="discounts"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['SALES_MANAGER']}>
+                <AdminInvoicesPage />
+              </PrivateRoute>
+            }
+            path="invoices"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['SALES_MANAGER']}>
+                <AdminRevenuePage />
+              </PrivateRoute>
+            }
+            path="revenue"
           />
           <Route
             element={

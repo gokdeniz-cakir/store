@@ -85,7 +85,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 
 - [x] **P7-T4** — Implement discount logic: `POST /api/admin/discounts` (SALES_MANAGER, takes book IDs + percentage, updates prices, stores original price). Create `notifications` table migration. Implement `NotificationService`: create notifications for wishlist users on discount. Notification endpoints: `GET /api/notifications`, `PATCH /api/notifications/{id}/read`.
 - [x] **P7-T5** — Frontend: Build discount management page (book multi-select, percentage input, apply, show currently discounted books). Add notification bell (Phosphor bell icon) in header with unread badge and dropdown list.
-- [ ] **P7-T6** — Implement invoice query: `GET /api/admin/invoices?startDate=...&endDate=...` (SALES_MANAGER). Implement revenue analytics: `GET /api/admin/revenue?startDate=...&endDate=...` (revenue, profit, breakdown).
+- [x] **P7-T6** — Implement invoice query: `GET /api/admin/invoices?startDate=...&endDate=...` (SALES_MANAGER). Implement revenue analytics: `GET /api/admin/revenue?startDate=...&endDate=...` (revenue, profit, breakdown).
 - [ ] **P7-T7** — Frontend: Build invoice management page (date range picker, invoice table, PDF download per row). Build revenue dashboard (date range picker, chart via Recharts, summary cards for revenue/profit/order count).
 
 ---

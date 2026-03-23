@@ -1,4 +1,4 @@
-import { ArrowRight, Books, ChartLine, Package, Quotes, Tag } from '@phosphor-icons/react'
+import { ArrowRight, Books, ChartLine, Package, Quotes, Rows, Tag } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth'
@@ -28,9 +28,10 @@ const launchCards = [
 ] as const
 
 const roadmap = [
-  { icon: Quotes, label: 'Review moderation', note: 'Pending Phase 7 task' },
+  { icon: Quotes, label: 'Review moderation', note: 'Active now' },
   { icon: ChartLine, label: 'Revenue analytics', note: 'Pending Phase 7 task' },
   { icon: Package, label: 'Delivery dashboards', note: 'More workflow depth arrives next' },
+  { icon: Rows, label: 'Stock controls', note: 'Active now' },
 ] as const
 
 function AdminPortalPage() {

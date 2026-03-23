@@ -79,7 +79,7 @@ Each task below should result in one commit upon completion. Mark tasks with `[x
 
 - [x] **P7-T1** — Frontend: Build admin layout with sidebar navigation (separate from the storefront layout). Build book management page (CRUD table + add/edit form with all fields including cover color picker). Build category management page.
 - [x] **P7-T2** — Implement `DeliveryService` and `DeliveryController`: `GET /api/admin/deliveries` (delivery ID, customer, book, quantity, total, address, completion status), `PATCH /api/admin/deliveries/{id}/status` (PROCESSING → IN_TRANSIT → DELIVERED). Frontend: Build delivery management page with status update controls.
-- [ ] **P7-T3** — Frontend: Build stock management page (book list with inline quantity editing). Build comment moderation page (pending reviews with approve/reject buttons and content preview).
+- [x] **P7-T3** — Frontend: Build stock management page (book list with inline quantity editing). Build comment moderation page (pending reviews with approve/reject buttons and content preview).
 
 ### Sales Manager
 

@@ -6,6 +6,8 @@ import Layout from './components/layout/Layout'
 import AdminBooksPage from './pages/AdminBooksPage'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import AdminDeliveriesPage from './pages/AdminDeliveriesPage'
+import AdminReviewsPage from './pages/AdminReviewsPage'
+import AdminStockPage from './pages/AdminStockPage'
 import AccountPage from './pages/AccountPage'
 import BookDetailPage from './pages/BookDetailPage'
 import AdminPortalPage from './pages/AdminPortalPage'
@@ -112,6 +114,22 @@ function App() {
               </PrivateRoute>
             }
             path="deliveries"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['PRODUCT_MANAGER']}>
+                <AdminStockPage />
+              </PrivateRoute>
+            }
+            path="stock"
+          />
+          <Route
+            element={
+              <PrivateRoute allowedRoles={['PRODUCT_MANAGER']}>
+                <AdminReviewsPage />
+              </PrivateRoute>
+            }
+            path="reviews"
           />
         </Route>
         <Route element={<Navigate replace to="/" />} path="*" />

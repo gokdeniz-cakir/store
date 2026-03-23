@@ -5,6 +5,7 @@ import {
   Package,
   Percent,
   Quotes,
+  Rows,
   SignOut,
   SquaresFour,
   Tag,
@@ -38,10 +39,21 @@ const primaryLinks = [
     label: 'Deliveries',
     to: '/admin/deliveries',
   },
+  {
+    description: 'Inline stock adjustments for live catalog quantities',
+    icon: Rows,
+    label: 'Stock',
+    to: '/admin/stock',
+  },
+  {
+    description: 'Approve or reject pending customer reviews',
+    icon: Quotes,
+    label: 'Reviews',
+    to: '/admin/reviews',
+  },
 ] as const
 
 const upcomingLinks = [
-  { icon: Quotes, label: 'Moderation' },
   { icon: Percent, label: 'Discounts' },
   { icon: ChartLine, label: 'Revenue' },
 ] as const

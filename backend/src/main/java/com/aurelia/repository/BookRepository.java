@@ -20,7 +20,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 		select book
 		from Book book
 		where (
-			:searchTerm is null
+			:searchTerm = ''
 			or lower(book.title) like lower(concat('%', :searchTerm, '%'))
 			or lower(book.author) like lower(concat('%', :searchTerm, '%'))
 			or lower(coalesce(book.description, '')) like lower(concat('%', :searchTerm, '%'))

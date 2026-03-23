@@ -166,11 +166,11 @@ public class BookService {
 
 	private String normalizeSearchTerm(String searchTerm) {
 		if (searchTerm == null) {
-			return null;
+			return "";
 		}
 
 		String trimmedSearchTerm = searchTerm.trim();
-		return trimmedSearchTerm.isEmpty() ? null : trimmedSearchTerm;
+		return trimmedSearchTerm.isEmpty() ? "" : trimmedSearchTerm;
 	}
 
 	private BookResponseDto mapBook(Book book) {

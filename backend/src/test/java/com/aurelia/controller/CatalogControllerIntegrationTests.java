@@ -118,6 +118,39 @@ class CatalogControllerIntegrationTests {
 	}
 
 	@Test
+	void shouldReturnPublicBookResultsWithoutSearchTerm() throws IOException, InterruptedException {
+		Category category = categoryRepository.saveAndFlush(Category.builder()
+			.name("Travel Writing")
+			.description("Journals and voyages.")
+			.iconName("map-trifold")
+			.build());
+
+		bookRepository.saveAndFlush(Book.builder()
+			.title("Atlas of Evening Roads")
+			.author("Marin Holt")
+			.isbn("9780140268868")
+			.edition("Collector's Edition")
+			.description("A survey of luminous routes.")
+			.stockQuantity(4)
+			.price(new BigDecimal("67.00"))
+			.publisher("Aurelia Editions")
+			.coverColor("#5C1717")
+			.category(category)
+			.build());
+
+		HttpResponse<String> response = sendRequest(
+			HttpRequest.newBuilder()
+				.uri(URI.create("http://localhost:" + port + "/api/books"))
+				.GET()
+				.build()
+		);
+
+		assertThat(response.statusCode()).isEqualTo(200);
+		assertThat(objectMapper.readTree(response.body()).at("/content/0/title").asText())
+			.isEqualTo("Atlas of Evening Roads");
+	}
+
+	@Test
 	void shouldReturnPublicCategories() throws IOException, InterruptedException {
 		categoryRepository.saveAndFlush(Category.builder()
 			.name("History")

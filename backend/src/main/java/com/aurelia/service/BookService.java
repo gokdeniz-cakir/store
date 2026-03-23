@@ -207,7 +207,7 @@ public class BookService {
 			.collect(Collectors.toMap(BookRatingSummaryProjection::getBookId, Function.identity()));
 	}
 
-	private BookResponseDto mapBook(Book book) {
+	public BookResponseDto mapBook(Book book) {
 		return mapBook(book, loadRatingsByBookId(List.of(book.getId())).get(book.getId()));
 	}
 

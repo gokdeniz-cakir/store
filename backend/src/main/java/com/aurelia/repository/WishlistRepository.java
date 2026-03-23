@@ -16,6 +16,9 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 	@EntityGraph(attributePaths = {"book", "book.category", "customer"})
 	List<Wishlist> findAllByCustomerIdOrderByAddedAtDesc(Long customerId);
 
+	@EntityGraph(attributePaths = {"book", "book.category", "customer"})
+	List<Wishlist> findAllByBookIdIn(List<Long> bookIds);
+
 	Optional<Wishlist> findByCustomerIdAndBookId(Long customerId, Long bookId);
 
 	boolean existsByCustomerIdAndBookId(Long customerId, Long bookId);
